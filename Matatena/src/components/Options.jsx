@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom"; 
 
 const contenedor = "flex justify-center items-center h-screen";
 const contenedorTodoAncho="w-64 space-y-3";
@@ -11,8 +12,11 @@ export default function Options() {
       {/* Contenedor de los botones con un ancho fijo */}
       <div className={contenedorTodoAncho}>
         {/* Botones superiores */}
+        {/* todo Encontrar una mejor manera para manejar los links y sus estilos */}
         <button className={todoAncho}>
-          Jugar
+          <Link to={"/play"}>
+            Jugar
+          </Link>
         </button>
         <button className={todoAncho}>
           Instrucciones
