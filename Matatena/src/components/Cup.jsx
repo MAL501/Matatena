@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 
 const Cup = () => {
     return (
-      <div className="flex justify-center items-center p-4 border-4 border-black">
+      <div className="flex justify-center items-center p-8 border-2 border-black">
         <div class="face one">
           <span></span>
         </div>
