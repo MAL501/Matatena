@@ -1,35 +1,35 @@
 import React from 'react';
-import "../styles/dices.css"
+import "../styles/dices.css";
 import PropTypes from 'prop-types';
 import { useDraggable } from '@dnd-kit/core';
 
-/**
- * 
- * 
- * 
- * @returns 
- */
+const Cup = ({id}) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: id,
+  });
 
-const Cup = () => {
-  const { attributes, listeners, setNodeRef } = useDraggable({
-    id:"player_dice",
-  })
-  
-    return (
-      <div ref={setNodeRef} {...listeners} {...attributes} className="flex justify-center items-center p-8 border-2 border-black">
-        <div >
-          <div className="face one">
-            <span></span>
-          </div>
-        </div>
+  // Estilos dinámicos para el movimiento
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={style} // Aplicamos los estilos dinámicos
+      className="flex justify-center items-center p-8 border-2 border-black cursor-grab active:cursor-grabbing"
+    >
+      <div className="face one">
+        <span></span>
       </div>
-    );
+    </div>
+  );
 };
 
-
-Cup.propTypes = {
-
-};
-
+Cup.propTypes = {};
 
 export default Cup;
