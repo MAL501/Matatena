@@ -1,31 +1,39 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import "../styles/dices.css"
-
+import "../styles/dices.css";
+import { useDroppable } from '@dnd-kit/core';
 
 const Board = () => {
-    return (
+  const { setNodeRef: setFirstColumnRef } = useDroppable({ id: "1" });
+  const { setNodeRef: setSecondColumnRef } = useDroppable({ id: "2" });
+  const { setNodeRef: setThirdColumnRef } = useDroppable({ id: "3" });
+
+  return (
     <div className="w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2">
-      {/* Celdas del tablero */}
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square"></div>
+      {/* Primera columna */}
+      <div ref={setFirstColumnRef} className="flex flex-col">
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-200" />
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-200" />
+        <div className="flex justify-center items-center aspect-square bg-sky-200" />
+      </div>
 
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square"></div>
+      {/* Segunda columna */}
+      <div ref={setSecondColumnRef} className="flex flex-col">
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-400" />
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-400" />
+        <div className="flex justify-center items-center aspect-square bg-sky-400" />
+      </div>
 
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square border-r-4 border-black last:border-r-0"></div>
-      <div className="flex justify-center items-center aspect-square"></div>
+      {/* Tercera columna */}
+      <div ref={setThirdColumnRef} className="flex flex-col">
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-600" />
+        <div className="flex justify-center items-center aspect-square border-b-4 border-black bg-sky-600" />
+        <div className="flex justify-center items-center aspect-square bg-sky-600" />
+      </div>
     </div>
-    );
+  );
 };
 
-
-Board.propTypes = {
-
-};
-
+Board.propTypes = {};
 
 export default Board;
