@@ -2,6 +2,7 @@ import React from 'react';
 import "../styles/dices.css";
 import PropTypes from 'prop-types';
 import { useDraggable } from '@dnd-kit/core';
+import Dice from './Dice';
 
 const Cup = ({id}) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
@@ -23,9 +24,7 @@ const Cup = ({id}) => {
       style={style} // Aplicamos los estilos dinámicos
       className="flex justify-center items-center p-8 border-2 border-black cursor-grab active:cursor-grabbing"
     >
-      <div className="face one">
-        <span></span>
-      </div>
+      <Dice face="1" />
     </div>
   );
 };
