@@ -1,24 +1,26 @@
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import "../styles/dices.css";
 import { useDroppable } from '@dnd-kit/core';
-import Dice from './Dice';
+import Column from './Column';
 
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
-const columnStyle = "flex flex-col";
-const cellStyle = "flex justify-center items-center p-8 border-2 border-black border-b-4 rounded-sm w-full h-full mb-[5%]"; // Ajuste del tamaño, padding y borde inferior
-const pointsTextStyle = "text-center mb-2 text-lg font-bold"; // Estilo para el texto de puntos
 
-const Board = ({ setPoints, dice }) => {
+const Board = ({ setPoints }) => {
   const { setNodeRef: setFirstColumnRef } = useDroppable({ id: "1" });
   const { setNodeRef: setSecondColumnRef } = useDroppable({ id: "2" });
   const { setNodeRef: setThirdColumnRef } = useDroppable({ id: "3" });
-  //Puntuación de cada columna
+
+  // Puntuación de cada columna
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
+
+  // Dados en cada columna
+  const [first_dice, setFirst_dice] = useState([null, null, null]); // Ejemplo: Primer dado en la primera celda
+  const [second_dice, setSecond_dice] = useState([null, null, null]);
+  const [third_dice, setThird_dice] = useState([null, null, null]);
 
   useEffect(() => {
     setPoints(first_column + second_column + third_column);
@@ -27,46 +29,28 @@ const Board = ({ setPoints, dice }) => {
   return (
     <div className={boardContainer}>
       {/* Primera columna */}
-      <div>
-        <p className={pointsTextStyle}>{first_column}</p> {/* Texto de puntos */}
-        <div ref={setFirstColumnRef} className={columnStyle}>
-          <div className={cellStyle}>
-            <Dice face='1' />
-          </div>
-          <div className={cellStyle}>
-          </div>
-          <div className={cellStyle}>
-          </div>
-        </div>
-      </div>
+      <Column
+        id="1"
+        points={first_column}
+        setNodeRef={setFirstColumnRef}
+        dice={first_dice}
+      />
 
       {/* Segunda columna */}
-      <div>
-        <p className={pointsTextStyle}>{second_column}</p> {/* Texto de puntos */}
-        <div ref={setSecondColumnRef} className={columnStyle}>
-          <div className={cellStyle}>
-            <Dice face='1' />
-          </div>
-          <div className={cellStyle}>
-          </div>
-          <div className={cellStyle}>
-          </div>
-        </div>
-      </div>
+      <Column
+        id="2"
+        points={second_column}
+        setNodeRef={setSecondColumnRef}
+        dice={second_dice}
+      />
 
       {/* Tercera columna */}
-      <div>
-        <p className={pointsTextStyle}>{third_column}</p> {/* Texto de puntos */}
-        <div ref={setThirdColumnRef} className={columnStyle}>
-          <div className={cellStyle}>
-            <Dice face='1' />
-          </div>
-          <div className={cellStyle}>
-          </div>
-          <div className={cellStyle}>
-          </div>
-        </div>
-      </div>
+      <Column
+        id="3"
+        points={third_column}
+        setNodeRef={setThirdColumnRef}
+        dice={third_dice}
+      />
     </div>
   );
 };
