@@ -8,8 +8,7 @@ import Dice from './Dice';
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 const columnStyle = "flex flex-col";
-const cellStyle = "flex justify-center items-center p-8 border-2 border-black rounded-sm w-full h-full"; // Ajuste del tamaño y padding
-const cellWithBorder = `${cellStyle} border-b-4 border-black`;
+const cellStyle = "flex justify-center items-center p-8 border-2 border-black border-b-4 rounded-sm w-full h-full mb-[5%]"; // Ajuste del tamaño, padding y borde inferior
 const pointsTextStyle = "text-center mb-2 text-lg font-bold"; // Estilo para el texto de puntos
 
 const Board = ({ setPoints, dice }) => {
@@ -31,10 +30,10 @@ const Board = ({ setPoints, dice }) => {
       <div>
         <p className={pointsTextStyle}>{first_column}</p> {/* Texto de puntos */}
         <div ref={setFirstColumnRef} className={columnStyle}>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
             <Dice face='1' />
           </div>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
           </div>
           <div className={cellStyle}>
           </div>
@@ -45,9 +44,10 @@ const Board = ({ setPoints, dice }) => {
       <div>
         <p className={pointsTextStyle}>{second_column}</p> {/* Texto de puntos */}
         <div ref={setSecondColumnRef} className={columnStyle}>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
+            <Dice face='1' />
           </div>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
           </div>
           <div className={cellStyle}>
           </div>
@@ -58,9 +58,10 @@ const Board = ({ setPoints, dice }) => {
       <div>
         <p className={pointsTextStyle}>{third_column}</p> {/* Texto de puntos */}
         <div ref={setThirdColumnRef} className={columnStyle}>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
+            <Dice face='1' />
           </div>
-          <div className={cellWithBorder}>
+          <div className={cellStyle}>
           </div>
           <div className={cellStyle}>
           </div>
