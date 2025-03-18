@@ -24,14 +24,20 @@ const Table = () => {
     const [turn,setTurn] = useState(false);
     const IDS_BOARD1 = ["1","2","3"];
     const IDS_BOARD2 = ["4","5","6"];
+    let [board1_enabled, setBoard1_enabled] = useState(true);
+    let [board2_enabled, setBoard2_enabled] = useState(false);
     /**
      * Cuando turn sea false, será el turno del host o jugador 1
      * Cuando turn sea verdadero, será el turno del guest o el jugador 2
      */
     useEffect(() =>{
         setCup_position(turn ? CUP_PLAYER2_POSITION : CUP_PLAYER1_POSITION);
+        setBoard1_enabled(!board1_enabled);
+        setBoard2_enabled(!board2_enabled);
+        console.log("Estado del tablero 1: ",board1_enabled);
+        console.log("Estado del tablero 2: ",board2_enabled);
         setDice(getDice());
-    },[turn])
+    },[turn]);
     const changeTurn = () =>{
         setTurn(!turn);
     }
@@ -48,12 +54,12 @@ const Table = () => {
                 <CloseButton />
                 {/* Board superior (Guest) */}
                 <div className="mb-[1%]">
-                    <Board id={IDS_BOARD2} setPoints={setPlayer2_points} />
+                    <Board id={IDS_BOARD2} enabled={board2_enabled} setPoints={setPlayer2_points} />
                 </div>
 
                 {/* Board inferior (Host) */}
                 <div className="mt-[1%]">
-                    <Board id={IDS_BOARD1} setPoints={setPlayer1_points} />
+                    <Board id={IDS_BOARD1} enabled={board1_enabled} setPoints={setPlayer1_points} />
                 </div>
 
                 {/* Cup inferior izquierdo */}

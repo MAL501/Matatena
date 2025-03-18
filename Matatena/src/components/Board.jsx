@@ -7,11 +7,20 @@ import Column from './Column';
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
-const Board = ({ setPoints, id }) => {
+const Board = ({ setPoints, enabled ,id }) => {
   /**todo Poner board_ + id_player */
-  const { setNodeRef: setFirstColumnRef } = useDroppable({ id: id[0] });
-  const { setNodeRef: setSecondColumnRef } = useDroppable({ id: id[1] });
-  const { setNodeRef: setThirdColumnRef } = useDroppable({ id: id[2] });
+  const { setNodeRef: setFirstColumnRef } = useDroppable({
+    id: id[0],
+    disabled: enabled,
+  });
+  const { setNodeRef: setSecondColumnRef } = useDroppable({
+    id: id[1],
+    disabled: enabled,
+  });
+  const { setNodeRef: setThirdColumnRef } = useDroppable({
+    id: id[2],
+    disabled: enabled,
+  });
 
   // Puntuación de cada columna
   const [first_column, setFirst_column] = useState(0);
