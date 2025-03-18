@@ -18,17 +18,13 @@ const Cup = ({id}) => {
 
   return (
     <div
-      className="flex justify-center items-center p-8 border-2 border-black cursor-grab active:cursor-grabbing"
-    >
-      <div
         ref={setNodeRef}
         {...listeners}
         {...attributes}
+        className="flex justify-center items-center p-8 border-2 border-black cursor-grab active:cursor-grabbing"
         style={style} // Aplicamos los estilos dinámicos
-
-      >
+    >
         <Dice face="1" />
-      </div>
     </div>
   );
 };
