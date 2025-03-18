@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useDroppable } from '@dnd-kit/core';
 import Dice from './Dice';
 
 // Constantes para las clases de Tailwind
@@ -8,7 +7,7 @@ const columnStyle = "flex flex-col";
 const cellStyle = "flex justify-center items-center p-8 border-2 border-black border-b-4 rounded-sm w-full h-full mb-[5%]"; // Ajuste del tamaño, padding y borde inferior
 const pointsTextStyle = "text-center mb-2 text-lg font-bold"; // Estilo para el texto de puntos
 
-const Column = ({ id, points, setNodeRef, dice }) => {
+const Column = ({  points, setNodeRef, dice }) => {
   return (
     <div>
       <p className={pointsTextStyle}>{points}</p> {/* Texto de puntos */}

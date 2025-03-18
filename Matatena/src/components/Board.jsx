@@ -8,6 +8,7 @@ import Column from './Column';
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
 const Board = ({ setPoints }) => {
+  /**todo Poner board_ + id_player */
   const { setNodeRef: setFirstColumnRef } = useDroppable({ id: "1" });
   const { setNodeRef: setSecondColumnRef } = useDroppable({ id: "2" });
   const { setNodeRef: setThirdColumnRef } = useDroppable({ id: "3" });
@@ -18,7 +19,7 @@ const Board = ({ setPoints }) => {
   const [third_column, setThird_column] = useState(0);
 
   // Dados en cada columna
-  const [first_dice, setFirst_dice] = useState([null, null, null]); // Ejemplo: Primer dado en la primera celda
+  const [first_dice, setFirst_dice] = useState([null, null, null]); 
   const [second_dice, setSecond_dice] = useState([null, null, null]);
   const [third_dice, setThird_dice] = useState([null, null, null]);
 
@@ -30,7 +31,6 @@ const Board = ({ setPoints }) => {
     <div className={boardContainer}>
       {/* Primera columna */}
       <Column
-        id="1"
         points={first_column}
         setNodeRef={setFirstColumnRef}
         dice={first_dice}
@@ -38,7 +38,6 @@ const Board = ({ setPoints }) => {
 
       {/* Segunda columna */}
       <Column
-        id="2"
         points={second_column}
         setNodeRef={setSecondColumnRef}
         dice={second_dice}
@@ -46,7 +45,6 @@ const Board = ({ setPoints }) => {
 
       {/* Tercera columna */}
       <Column
-        id="3"
         points={third_column}
         setNodeRef={setThirdColumnRef}
         dice={third_dice}
