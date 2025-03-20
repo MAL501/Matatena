@@ -34,8 +34,6 @@ const Table = () => {
         setCup_position(turn ? CUP_PLAYER2_POSITION : CUP_PLAYER1_POSITION);
         setBoard1_enabled(!board1_enabled);
         setBoard2_enabled(!board2_enabled);
-        console.log("Estado del tablero 1: ",board1_enabled);
-        console.log("Estado del tablero 2: ",board2_enabled);
         setDice(getDice());
     },[turn]);
     const changeTurn = () =>{

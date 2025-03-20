@@ -28,9 +28,9 @@ const Board = ({ setPoints, enabled ,id }) => {
   const [third_column, setThird_column] = useState(0);
 
   // Dados en cada columna
-  const [first_dice, setFirst_dice] = useState([null, null, null]); 
-  const [second_dice, setSecond_dice] = useState([null, null, null]);
-  const [third_dice, setThird_dice] = useState([null, null, null]);
+  const [first_column_dices, setFirst_column_dices] = useState([null, null, null]); 
+  const [second_column_dices, setSecond_column_dices] = useState([null, null, null]);
+  const [third_column_dices, setThird_column_dices] = useState([null, null, null]);
 
   useEffect(() => {
     setPoints(first_column + second_column + third_column);
@@ -42,21 +42,21 @@ const Board = ({ setPoints, enabled ,id }) => {
       <Column
         points={first_column}
         setNodeRef={setFirstColumnRef}
-        dice={first_dice}
+        dice={first_column_dices}
       />
 
       {/* Segunda columna */}
       <Column
         points={second_column}
         setNodeRef={setSecondColumnRef}
-        dice={second_dice}
+        dice={second_column_dices}
       />
 
       {/* Tercera columna */}
       <Column
         points={third_column}
         setNodeRef={setThirdColumnRef}
-        dice={third_dice}
+        dice={third_column_dices}
       />
     </div>
   );
