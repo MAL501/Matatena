@@ -7,7 +7,7 @@ import Column from './Column';
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
-const Board = ({ setPoints, enabled ,id }) => {
+const Board = ({ setPoints, enabled ,id, dice }) => {
   /**todo Poner board_ + id_player */
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
@@ -21,17 +21,34 @@ const Board = ({ setPoints, enabled ,id }) => {
     id: id[2],
     disabled: enabled,
   });
-
   // Puntuación de cada columna
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
 
   // Dados en cada columna
-  const [first_column_dices, setFirst_column_dices] = useState([null, null, null]); 
-  const [second_column_dices, setSecond_column_dices] = useState([null, null, null]);
-  const [third_column_dices, setThird_column_dices] = useState([null, null, null]);
-
+  const [first_column_dices, setFirst_column_dices] = useState([]); 
+  const [second_column_dices, setSecond_column_dices] = useState([]);
+  const [third_column_dices, setThird_column_dices] = useState([]);
+  /**
+   * todo Añadir dado a su columna
+   */
+  useEffect(() => {
+    switch (dice.column_id) {
+      case id[0]:
+        setFirst_column_dices((prev) => [...prev, dice.face]);
+        break;
+      case id[1]:
+        setSecond_column_dices((prev) => [...prev, dice.face]);
+        break;
+      case id[2]:
+        setThird_column_dices((prev) => [...prev, dice.face]);
+        break;
+      default:
+        break;
+    }
+    console.log("Dado:  ", dice);
+  },[dice]);
   useEffect(() => {
     setPoints(first_column + second_column + third_column);
   }, [first_column, second_column, third_column]);

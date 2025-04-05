@@ -22,6 +22,14 @@ const Table = () => {
     const [dice, setDice] = useState(1);
 //--------------------Variables del tablero----------------------
     const [turn,setTurn] = useState(false);
+    const [player1_hookDice, setPlayer1_hookDice] = useState({
+        column_id: null,
+        face: null
+    });
+    const [player2_hookDice, setPlayer2_hookDice] = useState({
+        column_id: null,
+        face: null
+    });
     const IDS_BOARD1 = ["1","2","3"];
     const IDS_BOARD2 = ["4","5","6"];
     let [board1_enabled, setBoard1_enabled] = useState(true);
@@ -39,11 +47,26 @@ const Table = () => {
     const changeTurn = () =>{
         setTurn(!turn);
     }
+    //TODO: comprobar por qué no se actualiza bien el estado de los dados
     const handleDragEnd = (event) => {
         const {active, over} = event;
         if(!over){
             return;
         }
+        // Si el dado se suelta fuera de la tabla, no se hace nada
+        if(active.id === over.id){
+            return;
+        }
+        turn ? setPlayer1_hookDice({
+            column_id: over.id,
+            face: active.data.current.face
+        }) : setPlayer2_hookDice({
+            column_id: over.id,
+            face: active.data.current.face
+        });
+        console.clear();
+        console.log("Player 1: ",player1_hookDice);
+        console.log("Player 2: ",player2_hookDice);
         changeTurn();
     }
     return (
@@ -52,12 +75,12 @@ const Table = () => {
                 <CloseButton />
                 {/* Board superior (Guest) */}
                 <div className="mb-[1%]">
-                    <Board id={IDS_BOARD2} enabled={board2_enabled} setPoints={setPlayer2_points} />
+                    <Board id={IDS_BOARD2} enabled={board2_enabled} setPoints={setPlayer2_points} dice={player2_hookDice}/>
                 </div>
 
                 {/* Board inferior (Host) */}
                 <div className="mt-[1%]">
-                    <Board id={IDS_BOARD1} enabled={board1_enabled} setPoints={setPlayer1_points} />
+                    <Board id={IDS_BOARD1} enabled={board1_enabled} setPoints={setPlayer1_points} dice={player1_hookDice}/>
                 </div>
 
                 {/* Cup inferior izquierdo */}
