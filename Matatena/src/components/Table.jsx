@@ -64,7 +64,9 @@ const Table = () => {
 
     const handleDragEnd = (event) => {
         const {active, over} = event;
-        if(!over){
+        //Si no se suelta en ninguna columna o
+        //la columna está llena, entonces no se hace nada
+        if(!over || over.data.current.size >= 3){
             return;
         }
         // Si el dado se suelta fuera de la tabla, no se hace nada
@@ -78,9 +80,6 @@ const Table = () => {
             column_id: over.id,
             face: active.data.current.face
         });
-        console.clear();
-        //console.log("Player 1: ",player1_hookDice);
-        //console.log("Player 2: ",player2_hookDice);
         changeTurn();
     }
 

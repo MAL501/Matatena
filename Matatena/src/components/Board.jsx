@@ -8,46 +8,47 @@ import Column from './Column';
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
 const Board = ({ setPoints, enabled ,id, dice }) => {
-  /**todo Poner board_ + id_player */
+    // Dados en cada columna
+    const [first_column_dices, setFirst_column_dices] = useState([]); 
+    const [second_column_dices, setSecond_column_dices] = useState([]);
+    const [third_column_dices, setThird_column_dices] = useState([]);
+  
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
     disabled: enabled,
+    data: {
+      size: first_column_dices.length,
+    },
   });
   const { setNodeRef: setSecondColumnRef } = useDroppable({
     id: id[1],
     disabled: enabled,
+    data: {
+      size: second_column_dices.length,
+    },
   });
   const { setNodeRef: setThirdColumnRef } = useDroppable({
     id: id[2],
     disabled: enabled,
+    data: {
+      size: third_column_dices.length,
+    },
   });
   // Puntuación de cada columna
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
 
-  // Dados en cada columna
-  const [first_column_dices, setFirst_column_dices] = useState([]); 
-  const [second_column_dices, setSecond_column_dices] = useState([]);
-  const [third_column_dices, setThird_column_dices] = useState([]);
-  /**
-   * todo Añadir dado a su columna
-   */
+  
   useEffect(() => {
-
-    console.log("Columnas: ", id);
-    console.log("Columna del dado: ", dice.column_id);
     switch (dice.column_id) {
       case id[0]:
-        console.log("Dado columna 1: ", dice.face);
         setFirst_column_dices((prev) => [...prev, dice.face]);
         break;
       case id[1]:
-        console.log("Dado columna 2: ", dice.face);
         setSecond_column_dices((prev) => [...prev, dice.face]);
         break;
       case id[2]:
-        console.log("Dado columna 3: ", dice.face);
         setThird_column_dices((prev) => [...prev, dice.face]);
         break;
       default:
