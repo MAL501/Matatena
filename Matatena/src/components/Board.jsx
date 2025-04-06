@@ -34,20 +34,25 @@ const Board = ({ setPoints, enabled ,id, dice }) => {
    * todo Añadir dado a su columna
    */
   useEffect(() => {
+
+    console.log("Columnas: ", id);
+    console.log("Columna del dado: ", dice.column_id);
     switch (dice.column_id) {
       case id[0]:
+        console.log("Dado columna 1: ", dice.face);
         setFirst_column_dices((prev) => [...prev, dice.face]);
         break;
       case id[1]:
+        console.log("Dado columna 2: ", dice.face);
         setSecond_column_dices((prev) => [...prev, dice.face]);
         break;
       case id[2]:
+        console.log("Dado columna 3: ", dice.face);
         setThird_column_dices((prev) => [...prev, dice.face]);
         break;
       default:
         break;
     }
-    console.log("Dado:  ", dice);
   },[dice]);
   useEffect(() => {
     setPoints(first_column + second_column + third_column);

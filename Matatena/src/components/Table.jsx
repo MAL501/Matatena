@@ -8,46 +8,60 @@ import {DndContext} from '@dnd-kit/core';
 
 const Table = () => {
 //--------------------Variables del jugador----------------------
+    //Controlan los puntos de cada jugador
     const [player1_points, setPlayer1_points] = useState(0);
     const [player2_points, setPlayer2_points] = useState(0);
 
 //--------------------Variables del cubilete----------------------
     const CUP_IP = 0;
 
-
+    //Posiciones del cubilete	
     const CUP_PLAYER1_POSITION = "absolute bottom-[25%] left-[15%]";
     const CUP_PLAYER2_POSITION = "absolute top-[25%] right-[15%]";
-    const [cup_position, setCup_position]=useState(CUP_PLAYER1_POSITION);
 
+    //Indica quién debe tener el cubilete
+    const [cup_position, setCup_position]=useState(CUP_PLAYER1_POSITION);
+    
+    //Dado que se usa
     const [dice, setDice] = useState(1);
 //--------------------Variables del tablero----------------------
-    const [turn,setTurn] = useState(false);
+    //Controla el turno del jugador
+    const [turn,setTurn] = useState(true);
+    //Nos indica la columna dónde el jugador deja el dado y
+    //el valor del dado
     const [player1_hookDice, setPlayer1_hookDice] = useState({
-        column_id: null,
-        face: null
+        column_id: 0,
+        face: 0
     });
+
     const [player2_hookDice, setPlayer2_hookDice] = useState({
-        column_id: null,
-        face: null
+        column_id: 0,
+        face: 0
     });
+
+    //IDs que necesitan los tableros para poder 
+    //"Droppear" los dados en las columnas
     const IDS_BOARD1 = ["1","2","3"];
     const IDS_BOARD2 = ["4","5","6"];
+
+    //Nos permite poder, o no, usar el tablero según el turno
     let [board1_enabled, setBoard1_enabled] = useState(true);
     let [board2_enabled, setBoard2_enabled] = useState(false);
     /**
-     * Cuando turn sea false, será el turno del host o jugador 1
-     * Cuando turn sea verdadero, será el turno del guest o el jugador 2
+     * Cuando turn sea true, será el turno del host o jugador 1
+     * Cuando turn sea false, será el turno del guest o el jugador 2
      */
     useEffect(() =>{
-        setCup_position(turn ? CUP_PLAYER2_POSITION : CUP_PLAYER1_POSITION);
-        setBoard1_enabled(!board1_enabled);
-        setBoard2_enabled(!board2_enabled);
+        setCup_position(turn ? CUP_PLAYER1_POSITION : CUP_PLAYER2_POSITION);
+        setBoard1_enabled(!turn);
+        setBoard2_enabled(turn);
         setDice(getDice());
     },[turn]);
+
     const changeTurn = () =>{
         setTurn(!turn);
     }
-    //TODO: comprobar por qué no se actualiza bien el estado de los dados
+
     const handleDragEnd = (event) => {
         const {active, over} = event;
         if(!over){
@@ -65,10 +79,11 @@ const Table = () => {
             face: active.data.current.face
         });
         console.clear();
-        console.log("Player 1: ",player1_hookDice);
-        console.log("Player 2: ",player2_hookDice);
+        //console.log("Player 1: ",player1_hookDice);
+        //console.log("Player 2: ",player2_hookDice);
         changeTurn();
     }
+
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <div className="relative w-full h-screen flex flex-col justify-center items-center">
