@@ -2,17 +2,37 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import "../styles/dices.css";
 import { useDroppable } from '@dnd-kit/core';
+import { pointsColumn } from '../services/diceService'; 
 import Column from './Column';
 
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
 const Board = ({ setPoints, enabled ,id, dice }) => {
-    // Dados en cada columna
-    const [first_column_dices, setFirst_column_dices] = useState([]); 
-    const [second_column_dices, setSecond_column_dices] = useState([]);
-    const [third_column_dices, setThird_column_dices] = useState([]);
-  
+  // Dados en cada columna
+  const [first_column_dices, setFirst_column_dices] = useState([]); 
+  const [second_column_dices, setSecond_column_dices] = useState([]);
+  const [third_column_dices, setThird_column_dices] = useState([]);
+  // Puntuación de cada columna
+  const [first_column, setFirst_column] = useState(0);
+  const [second_column, setSecond_column] = useState(0);
+  const [third_column, setThird_column] = useState(0);
+  useEffect(() => {
+
+    setFirst_column(pointsColumn(first_column_dices));
+
+  }, [first_column_dices]);
+
+  useEffect(() => {
+
+    setSecond_column(pointsColumn(second_column_dices));
+
+  }, [second_column_dices]);
+
+  useEffect(() => {
+    setThird_column(pointsColumn(third_column_dices));
+
+  }, [third_column_dices]);
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
     disabled: enabled,
@@ -34,10 +54,6 @@ const Board = ({ setPoints, enabled ,id, dice }) => {
       size: third_column_dices.length,
     },
   });
-  // Puntuación de cada columna
-  const [first_column, setFirst_column] = useState(0);
-  const [second_column, setSecond_column] = useState(0);
-  const [third_column, setThird_column] = useState(0);
 
   
   useEffect(() => {
@@ -55,9 +71,7 @@ const Board = ({ setPoints, enabled ,id, dice }) => {
         break;
     }
   },[dice]);
-  useEffect(() => {
-    setPoints(first_column + second_column + third_column);
-  }, [first_column, second_column, third_column]);
+  //Actualiza la puntuación de los dados
 
   return (
     <div className={boardContainer}>
