@@ -8,31 +8,34 @@ import Column from './Column';
 // Constantes para las clases de Tailwind
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
-const Board = ({ setPoints, enabled ,id, dice }) => {
-  // Dados en cada columna
-  const [first_column_dices, setFirst_column_dices] = useState([]); 
-  const [second_column_dices, setSecond_column_dices] = useState([]);
-  const [third_column_dices, setThird_column_dices] = useState([]);
-  // Puntuación de cada columna
+const Board = ({
+  setPoints,
+  enabled,
+  id,
+  dice,
+  first_column_dices,
+  setFirst_column_dices,
+  second_column_dices,
+  setSecond_column_dices,
+  third_column_dices,
+  setThird_column_dices,
+}) => {
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
+
   useEffect(() => {
-
     setFirst_column(pointsColumn(first_column_dices));
-
   }, [first_column_dices]);
 
   useEffect(() => {
-
     setSecond_column(pointsColumn(second_column_dices));
-
   }, [second_column_dices]);
 
   useEffect(() => {
     setThird_column(pointsColumn(third_column_dices));
-
   }, [third_column_dices]);
+
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
     disabled: enabled,
@@ -55,7 +58,6 @@ const Board = ({ setPoints, enabled ,id, dice }) => {
     },
   });
 
-  
   useEffect(() => {
     switch (dice.column_id) {
       case id[0]:
@@ -70,31 +72,13 @@ const Board = ({ setPoints, enabled ,id, dice }) => {
       default:
         break;
     }
-  },[dice]);
-  //Actualiza la puntuación de los dados
+  }, [dice]);
 
   return (
     <div className={boardContainer}>
-      {/* Primera columna */}
-      <Column
-        points={first_column}
-        setNodeRef={setFirstColumnRef}
-        dice={first_column_dices}
-      />
-
-      {/* Segunda columna */}
-      <Column
-        points={second_column}
-        setNodeRef={setSecondColumnRef}
-        dice={second_column_dices}
-      />
-
-      {/* Tercera columna */}
-      <Column
-        points={third_column}
-        setNodeRef={setThirdColumnRef}
-        dice={third_column_dices}
-      />
+      <Column points={first_column} setNodeRef={setFirstColumnRef} dice={first_column_dices} />
+      <Column points={second_column} setNodeRef={setSecondColumnRef} dice={second_column_dices} />
+      <Column points={third_column} setNodeRef={setThirdColumnRef} dice={third_column_dices} />
     </div>
   );
 };
