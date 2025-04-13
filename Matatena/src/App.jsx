@@ -6,7 +6,7 @@ import Table from './components/Table';
 function App() {
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Matatena">
       <Routes>
         <Route path='/' element={<Options />} />
         <Route path='/play' element={<Table />}/>
