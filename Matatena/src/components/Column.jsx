@@ -7,24 +7,46 @@ const columnStyle = "flex flex-col";
 const cellStyle = "flex justify-center items-center p-8 border-2 border-black border-b-4 rounded-sm w-full h-full mb-[5%]"; // Ajuste del tamaño, padding y borde inferior
 const pointsTextStyle = "text-center mb-2 text-lg font-bold"; // Estilo para el texto de puntos
 
-const Column = ({  points, setNodeRef, dice }) => {
-  return (
-    <div>
-      <p className={pointsTextStyle}>{points}</p> {/* Texto de puntos */}
-      <div ref={setNodeRef} className={columnStyle}>
-        {dice.map((face, index) => (
-          <div key={index} className={cellStyle}>
-            {face && <Dice face={face} />} {/* Renderiza el dado si existe */}
-          </div>
-        ))}
-        {/* Rellenar las celdas vacías si es necesario */}
-        {dice.length < 3 &&
-          Array.from({ length: 3 - dice.length }).map((_, index) => (
-            <div key={`empty-${index}`} className={cellStyle} />
+const Column = ({  points, setNodeRef, dice, owner }) => {
+  if (owner == true) {
+    return (
+      <div>
+        <p className={pointsTextStyle}>{points}</p> {/* Texto de puntos */}
+        <div ref={setNodeRef} className={columnStyle}>
+          {dice.map((face, index) => (
+            <div key={index} className={cellStyle}>
+              {face && <Dice face={face} />} {/* Renderiza el dado si existe */}
+            </div>
           ))}
+          {/* Rellenar las celdas vacías si es necesario */}
+          {dice.length < 3 &&
+            Array.from({ length: 3 - dice.length }).map((_, index) => (
+              <div key={`empty-${index}`} className={cellStyle} />
+            ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  
+  }else{
+    return (
+      <div>
+        <div ref={setNodeRef} className={columnStyle}>
+          {dice.map((face, index) => (
+            <div key={index} className={cellStyle}>
+              {face && <Dice face={face} />} {/* Renderiza el dado si existe */}
+            </div>
+          ))}
+          {/* Rellenar las celdas vacías si es necesario */}
+          {dice.length < 3 &&
+            Array.from({ length: 3 - dice.length }).map((_, index) => (
+              <div key={`empty-${index}`} className={cellStyle} />
+            ))}
+        </div>
+        <p className={pointsTextStyle}>{points}</p> {/* Texto de puntos */}
+      </div>
+    );
+  
+  }
 };
 
 Column.propTypes = {

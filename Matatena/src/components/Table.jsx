@@ -16,8 +16,8 @@ const Table = () => {
     const CUP_IP = 0;
 
     //Posiciones del cubilete	
-    const CUP_PLAYER1_POSITION = "absolute bottom-[25%] left-[15%]";
-    const CUP_PLAYER2_POSITION = "absolute top-[25%] right-[15%]";
+    const CUP_PLAYER2_POSITION = "absolute w-[15%] h-[25%] justify-center items-center border-4 p-4 border-red-950 rounded-xl top-[25%] right-[15%]";
+    const CUP_PLAYER1_POSITION = "absolute w-[15%] h-[25%] justify-center items-center border-4 p-4 border-red-950 rounded-xl bottom-[25%] left-[15%]";
 
     //Indica quién debe tener el cubilete
     const [cup_position, setCup_position]=useState(CUP_PLAYER1_POSITION);
@@ -136,6 +136,7 @@ const Table = () => {
                         setSecond_column_dices={setPlayer2_second_column_dices}
                         third_column_dices={player2_third_column_dices}
                         setThird_column_dices={setPlayer2_third_column_dices}
+                        owner={false}
                     />
                 </div>
 
@@ -152,6 +153,7 @@ const Table = () => {
                         setSecond_column_dices={setPlayer1_second_column_dices}
                         third_column_dices={player1_third_column_dices}
                         setThird_column_dices={setPlayer1_third_column_dices}
+                        owner={true}
                     />
                 </div>
 

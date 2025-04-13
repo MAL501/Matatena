@@ -19,11 +19,13 @@ const Board = ({
   setSecond_column_dices,
   third_column_dices,
   setThird_column_dices,
+  owner,
 }) => {
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
-
+  // Controlamos a que jugador pertenece el tablero
+  const [boardOwner, setBoardOwner] = useState(owner);
   useEffect(() => {
     setFirst_column(pointsColumn(first_column_dices));
   }, [first_column_dices]);
@@ -76,9 +78,9 @@ const Board = ({
 
   return (
     <div className={boardContainer}>
-      <Column points={first_column} setNodeRef={setFirstColumnRef} dice={first_column_dices} />
-      <Column points={second_column} setNodeRef={setSecondColumnRef} dice={second_column_dices} />
-      <Column points={third_column} setNodeRef={setThirdColumnRef} dice={third_column_dices} />
+      <Column owner={boardOwner} points={first_column} setNodeRef={setFirstColumnRef} dice={first_column_dices} />
+      <Column owner={boardOwner} points={second_column} setNodeRef={setSecondColumnRef} dice={second_column_dices} />
+      <Column owner={boardOwner} points={third_column} setNodeRef={setThirdColumnRef} dice={third_column_dices} />
     </div>
   );
 };

@@ -1,15 +1,15 @@
 .dice {
 display: flex;
 flex-wrap: wrap;
+height: 100%;
 gap: 20px;
 }
 
 .face {
-    width: 90%;
+    width: 100%;
     height: auto;
     border-radius: 10px;
     background: white;
-    border: 3px solid black;
     display: grid;
     place-items: center;
     position: relative;
@@ -23,110 +23,109 @@ border-radius: 50%;
 position: absolute;
 }
 
-/* Distribución de puntos en cada cara */
+/* Margen para los números 3, 4, 5 y 6 */
+.three span,
+.four span,
+.five span,
+.six span {
+  margin: 5px;
+}
 
 /* Cara 1: Un punto en el centro */
 .one span {
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Cara 2: Dos puntos en esquinas opuestas */
 .two span:nth-child(1) {
-top: 20%;
-left: 20%;
+  top: 20%;
+  left: 20%;
 }
 .two span:nth-child(2) {
-bottom: 20%;
-right: 20%;
+  bottom: 20%;
+  right: 20%;
 }
 
 /* Cara 3: Tres puntos (diagonal) */
 .three span:nth-child(1) {
-top: 20%;
-left: 20%;
+  top: 20%;
+  left: 20%;
 }
 .three span:nth-child(2) {
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .three span:nth-child(3) {
-bottom: 20%;
-right: 20%;
+  bottom: 20%;
+  right: 20%;
 }
 
 /* Cara 4: Cuatro puntos en las esquinas */
 .four span:nth-child(1) {
-top: 20%;
-left: 20%;
+  top: 20%;
+  left: 20%;
 }
 .four span:nth-child(2) {
-top: 20%;
-right: 20%;
+  top: 20%;
+  right: 20%;
 }
 .four span:nth-child(3) {
-bottom: 20%;
-left: 20%;
+  bottom: 20%;
+  left: 20%;
 }
 .four span:nth-child(4) {
-bottom: 20%;
-right: 20%;
+  bottom: 20%;
+  right: 20%;
 }
 
 /* Cara 5: Como el 4 pero con un punto en el centro */
-.five span:nth-child(1),
-.five span:nth-child(2),
-.five span:nth-child(3),
-.five span:nth-child(4) {
-width: 15px;
-height: 15px;
-}
 .five span:nth-child(1) {
-top: 20%;
-left: 20%;
+  top: 20%;
+  left: 20%;
 }
 .five span:nth-child(2) {
-top: 20%;
-right: 20%;
+  top: 20%;
+  right: 20%;
 }
 .five span:nth-child(3) {
-bottom: 20%;
-left: 20%;
+  bottom: 20%;
+  left: 20%;
 }
 .five span:nth-child(4) {
-bottom: 20%;
-right: 20%;
+  bottom: 20%;
+  right: 20%;
 }
 .five span:nth-child(5) {
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 /* Cara 6: Seis puntos en filas */
 .six span:nth-child(1),
+.six span:nth-child(4) {
+  top: 20%;
+}
+.six span:nth-child(2),
+.six span:nth-child(5) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.six span:nth-child(3),
+.six span:nth-child(6) {
+  bottom: 20%;
+}
+
+.six span:nth-child(1),
 .six span:nth-child(2),
 .six span:nth-child(3) {
-left: 20%;
+  left: 20%;
 }
 .six span:nth-child(4),
 .six span:nth-child(5),
 .six span:nth-child(6) {
-right: 20%;
-}
-
-.six span:nth-child(1),
-.six span:nth-child(4) {
-top: 20%;
-}
-.six span:nth-child(2),
-.six span:nth-child(5) {
-top: 50%;
-transform: translateY(-50%);
-}
-.six span:nth-child(3),
-.six span:nth-child(6) {
-bottom: 20%;
+  right: 20%;
 }

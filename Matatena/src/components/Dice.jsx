@@ -9,53 +9,65 @@ const Dice = ({ face }) => {
     switch (faceNumber) {
       case 1:
         return (
-          <div className="face one">
-            <span></span>
+          <div className="dice">
+            <div className="face one">
+              <span></span>
+            </div>
           </div>
         );
       case 2:
         return (
-          <div className="face two">
-            <span></span>
-            <span></span>
+          <div className="dice">
+            <div className="face two">
+              <span></span>
+              <span></span>
+            </div>
           </div>
         );
       case 3:
         return (
-          <div className="face three">
-            <span></span>
-            <span></span>
-            <span></span>
+          <div className="dice">
+            <div className="face three">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         );
       case 4:
         return (
-          <div className="face four">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+          <div className="dice">
+            <div className="face four">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         );
       case 5:
         return (
-          <div className="face five">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+          <div className="dice">
+            <div className="face five">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         );
       case 6:
         return (
-          <div className="face six">
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
+          <div className="dice">
+            <div className="face six">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         );
       default:
