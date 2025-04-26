@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Cup from "./Cup";
 import Board from "./Board";
 import CloseButton from "./CloseButton";
@@ -39,7 +39,7 @@ const Table = () => {
         face: 0
     });
 
-    //Estados para los dados en las columnas
+    //Cada uno de estos estados almacena todos los dados de su columna
     const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([]);
     const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([]);
     const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([]);
@@ -66,14 +66,14 @@ const Table = () => {
         setCup_position(turn ? CUP_PLAYER1_POSITION : CUP_PLAYER2_POSITION);
         setBoard1_enabled(!turn);
         setBoard2_enabled(turn);
-        setDice(getDice());
+        //TODO: volver a poner la función de getDice() cuando se terminen de hacer las pruebas de eliminar dados
+        setDice(3);
     },[turn]);
     //TODO: Los puntos del oponente no se actualizan al eliminar los dados
     //Eliminan los dados del oponente
     useEffect(() => {
         setPlayer2_first_column_dices((prev) => removeDices(prev, player1_first_column_dices[player1_first_column_dices.length - 1]));
     }, [player1_first_column_dices]);
-
     useEffect(() => {
         setPlayer2_second_column_dices((prev) => removeDices(prev, player1_second_column_dices[player1_second_column_dices.length - 1]));
     }, [player1_second_column_dices]);
@@ -128,7 +128,6 @@ const Table = () => {
                     <Board 
                         id={IDS_BOARD2} 
                         enabled={board2_enabled} 
-                        setPoints={setPlayer2_points} 
                         dice={player2_hookDice}
                         first_column_dices={player2_first_column_dices}
                         setFirst_column_dices={setPlayer2_first_column_dices}
@@ -136,6 +135,9 @@ const Table = () => {
                         setSecond_column_dices={setPlayer2_second_column_dices}
                         third_column_dices={player2_third_column_dices}
                         setThird_column_dices={setPlayer2_third_column_dices}
+                        opponent_first_column={player1_first_column_dices}
+                        opponent_second_column={player1_second_column_dices}
+                        opponent_third_column={player1_third_column_dices}
                         owner={false}
                     />
                 </div>
@@ -145,7 +147,6 @@ const Table = () => {
                     <Board 
                         id={IDS_BOARD1} 
                         enabled={board1_enabled} 
-                        setPoints={setPlayer1_points} 
                         dice={player1_hookDice}
                         first_column_dices={player1_first_column_dices}
                         setFirst_column_dices={setPlayer1_first_column_dices}
@@ -153,6 +154,9 @@ const Table = () => {
                         setSecond_column_dices={setPlayer1_second_column_dices}
                         third_column_dices={player1_third_column_dices}
                         setThird_column_dices={setPlayer1_third_column_dices}
+                        opponent_first_column={player2_first_column_dices}
+                        opponent_second_column={player2_second_column_dices}
+                        opponent_third_column={player2_third_column_dices}
                         owner={true}
                     />
                 </div>

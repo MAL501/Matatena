@@ -48,7 +48,7 @@ const Dice = ({ face }) => {
       case 5:
         return (
           <div className="dice">
-            <div className="face five">
+            <div className="face four">
               <span></span>
               <span></span>
               <span></span>

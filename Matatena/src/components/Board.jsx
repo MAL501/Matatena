@@ -9,7 +9,6 @@ import Column from './Column';
 const boardContainer = "w-72 h-72 grid grid-cols-3 gap-x-2 bg-white border-4 border-black p-2 rounded-xl";
 
 const Board = ({
-  setPoints,
   enabled,
   id,
   dice,
@@ -19,8 +18,12 @@ const Board = ({
   setSecond_column_dices,
   third_column_dices,
   setThird_column_dices,
+  opponent_first_column,
+  opponent_second_column,
+  opponent_third_column,
   owner,
 }) => {
+  //Cada uno de estos estados almacena los puntos totales de su columna
   const [first_column, setFirst_column] = useState(0);
   const [second_column, setSecond_column] = useState(0);
   const [third_column, setThird_column] = useState(0);
@@ -28,15 +31,16 @@ const Board = ({
   const [boardOwner, setBoardOwner] = useState(owner);
   useEffect(() => {
     setFirst_column(pointsColumn(first_column_dices));
-  }, [first_column_dices]);
+    console.log("Puntos columna 1: ", first_column);
+  }, [first_column_dices, opponent_first_column]);
 
   useEffect(() => {
     setSecond_column(pointsColumn(second_column_dices));
-  }, [second_column_dices]);
+  }, [second_column_dices, opponent_second_column]);
 
   useEffect(() => {
     setThird_column(pointsColumn(third_column_dices));
-  }, [third_column_dices]);
+  }, [third_column_dices, opponent_third_column]);
 
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
@@ -85,8 +89,6 @@ const Board = ({
   );
 };
 
-Board.propTypes = {
-  setPoints: PropTypes.func.isRequired, // Asegura que setPoints sea una función requerida
-};
+
 
 export default Board;

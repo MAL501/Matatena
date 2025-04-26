@@ -15,6 +15,9 @@ export const addDiceToColumn = (column, dice) =>{
 //TODO: puntuación = número de dados del mismo palo * suma del valor de los dados del mismo palo 
 export const pointsColumn = (column) =>{
     let points = 0;
+    if(column.length === 0){
+        return points;
+    }
     column.forEach((dice) => {
         points += dice;
         console.log("Puntos: ", points);
