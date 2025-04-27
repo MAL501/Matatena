@@ -2,6 +2,7 @@ import React, { use, useEffect, useState } from "react";
 import Cup from "./Cup";
 import Board from "./Board";
 import CloseButton from "./CloseButton";
+import MessageDialog from "./MessageDialog";
 import { getDice, removeDices } from "../services/diceService";
 import {DndContext} from '@dnd-kit/core';
 
@@ -56,8 +57,10 @@ const Table = () => {
     //Nos permite poder, o no, usar el tablero según el turno
     let [board1_enabled, setBoard1_enabled] = useState(true);
     let [board2_enabled, setBoard2_enabled] = useState(false);
-
     
+    const [winner, setWinner] = useState(null); // Estado para el ganador
+    const [gameOver, setGameOver] = useState(false); // Estado para indicar si la partida terminó
+
     /**
      * Cuando turn sea true, será el turno del host o jugador 1
      * Cuando turn sea false, será el turno del guest o el jugador 2
@@ -66,8 +69,7 @@ const Table = () => {
         setCup_position(turn ? CUP_PLAYER1_POSITION : CUP_PLAYER2_POSITION);
         setBoard1_enabled(!turn);
         setBoard2_enabled(turn);
-        //TODO: volver a poner la función de getDice() cuando se terminen de hacer las pruebas de eliminar dados
-        setDice(3);
+        setDice(getDice());
     },[turn]);
     //TODO: Los puntos del oponente no se actualizan al eliminar los dados
     //Eliminan los dados del oponente
@@ -93,6 +95,33 @@ const Table = () => {
     useEffect(() => {
         setPlayer1_third_column_dices((prev) => removeDices(prev, player2_third_column_dices[player2_third_column_dices.length - 1]));
     }, [player2_third_column_dices]);
+    //El siguiente useEffect controla los puntos de cada jugador
+    useEffect(() => {
+        //Calculamos los puntos de cada jugador
+        setPlayer1_points(player1_first_column_dices.length + player1_second_column_dices.length + player1_third_column_dices.length);
+        setPlayer2_points(player2_first_column_dices.length + player2_second_column_dices.length + player2_third_column_dices.length);
+    }, [player1_first_column_dices, player1_second_column_dices, player1_third_column_dices, player2_first_column_dices, player2_second_column_dices, player2_third_column_dices]);
+
+    //El siguiente useEffect tiene como objetivo mostrar un dialog cuando cualquiera de los dos jugadores gane
+    useEffect(() => {
+        if (
+            player1_first_column_dices.length === 3 &&
+            player1_second_column_dices.length === 3 &&
+            player1_third_column_dices.length === 3
+        ) {
+            setWinner("Jugador 1");
+            setGameOver(true); // Marca la partida como terminada
+        }
+
+        if (
+            player2_first_column_dices.length === 3 &&
+            player2_second_column_dices.length === 3 &&
+            player2_third_column_dices.length === 3
+        ) {
+            setWinner("Jugador 2");
+            setGameOver(true); // Marca la partida como terminada
+        }
+    }, [player1_points, player2_points]);
 
     const changeTurn = () =>{
         setTurn(!turn);
@@ -165,6 +194,9 @@ const Table = () => {
                 <div className={cup_position}>
                     <Cup id={CUP_IP} face={dice}/>
                 </div>
+
+                {/* Mostrar el diálogo solo si la partida terminó */}
+                {gameOver && <MessageDialog winner={winner} />}
             </div>
         </DndContext>
     );
