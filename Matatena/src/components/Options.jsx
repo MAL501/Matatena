@@ -18,30 +18,7 @@ export default function Options() {
             Jugar
           </button>
         </Link>
-        <Link to={"/instructions"} className="block">
-          <button className={todoAncho}>
-            Instrucciones
-          </button>
-        </Link>
-        <Link to={"/ranking"} className="block">
-          <button className={todoAncho}>
-            Ranking
-          </button>
-        </Link>
-
-        {/* Botones inferiores en una misma fila */}
-        <div className={contenedorColumnas}>
-          <Link to={"/login"} className="block">
-            <button className={columna}>
-              Login
-            </button>
-          </Link>
-          <Link to={"/register"} className="block">
-            <button className={columna}>
-              Register
-            </button>
-          </Link>
-        </div>
+        
       </div>
     </div>
   );

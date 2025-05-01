@@ -137,6 +137,36 @@ const Table = () => {
         setTurn(!turn);
     }
 
+    const resetGame = () => {
+        // Reinicia los puntos de los jugadores
+        setPlayer1_points(0);
+        setPlayer2_points(0);
+
+        // Reinicia los dados en las columnas
+        setPlayer1_first_column_dices([]);
+        setPlayer1_second_column_dices([]);
+        setPlayer1_third_column_dices([]);
+        setPlayer2_first_column_dices([]);
+        setPlayer2_second_column_dices([]);
+        setPlayer2_third_column_dices([]);
+
+        // Reinicia el turno al jugador 1
+        setTurn(true);
+
+        // Reinicia el cubilete y el dado
+        setCup_position(CUP_PLAYER1_POSITION);
+        setDice(1);
+
+        // Reinicia los estados de actualización de columnas
+        setFirst_columns_update(false);
+        setSecond_columns_update(false);
+        setThird_columns_update(false);
+
+        // Reinicia el estado del ganador y el estado del juego
+        setWinner(null);
+        setGameOver(false);
+    };
+
     const handleDragEnd = (event) => {
         const {active, over} = event;
         //Si no se suelta en ninguna columna o
@@ -212,7 +242,7 @@ const Table = () => {
                 </div>
 
                 {/* Mostrar el diálogo solo si la partida terminó */}
-                {gameOver && <MessageDialog winner={winner} />}
+                {gameOver && <MessageDialog winner={winner} reset={resetGame} />}
             </div>
         </DndContext>
     );
