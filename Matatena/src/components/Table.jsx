@@ -54,6 +54,11 @@ const Table = () => {
     const IDS_BOARD1 = ["1","2","3"];
     const IDS_BOARD2 = ["4","5","6"];
 
+    //Indican si se deben actualizar o no los puntos de las columnas
+    const [first_columns_update, setFirst_columns_update] = useState(false);
+    const [second_columns_update, setSecond_columns_update] = useState(false);
+    const [third_columns_update, setThird_columns_update] = useState(false);
+
     //Nos permite poder, o no, usar el tablero según el turno
     let [board1_enabled, setBoard1_enabled] = useState(true);
     let [board2_enabled, setBoard2_enabled] = useState(false);
@@ -75,25 +80,31 @@ const Table = () => {
     //Eliminan los dados del oponente
     useEffect(() => {
         setPlayer2_first_column_dices((prev) => removeDices(prev, player1_first_column_dices[player1_first_column_dices.length - 1]));
+        setFirst_columns_update(!first_columns_update);
     }, [player1_first_column_dices]);
     useEffect(() => {
         setPlayer2_second_column_dices((prev) => removeDices(prev, player1_second_column_dices[player1_second_column_dices.length - 1]));
+        setSecond_columns_update(!second_columns_update);
     }, [player1_second_column_dices]);
 
     useEffect(() => {
         setPlayer2_third_column_dices((prev) => removeDices(prev, player1_third_column_dices[player1_third_column_dices.length - 1]));
+        setThird_columns_update(!third_columns_update);
     }, [player1_third_column_dices]);
 
     useEffect(() => {
         setPlayer1_first_column_dices((prev) => removeDices(prev, player2_first_column_dices[player2_first_column_dices.length - 1]));
+        setFirst_columns_update(!first_columns_update);
     }, [player2_first_column_dices]);
 
     useEffect(() => {
         setPlayer1_second_column_dices((prev) => removeDices(prev, player2_second_column_dices[player2_second_column_dices.length - 1]));
+        setSecond_columns_update(!second_columns_update);
     }, [player2_second_column_dices]);
 
     useEffect(() => {
         setPlayer1_third_column_dices((prev) => removeDices(prev, player2_third_column_dices[player2_third_column_dices.length - 1]));
+        setThird_columns_update(!third_columns_update);
     }, [player2_third_column_dices]);
     //El siguiente useEffect controla los puntos de cada jugador
     useEffect(() => {
@@ -168,6 +179,9 @@ const Table = () => {
                         opponent_second_column={player1_second_column_dices}
                         opponent_third_column={player1_third_column_dices}
                         owner={false}
+                        first_columns_update={first_columns_update}
+                        second_columns_update={second_columns_update}
+                        third_columns_update={third_columns_update}
                     />
                 </div>
 
@@ -187,6 +201,9 @@ const Table = () => {
                         opponent_second_column={player2_second_column_dices}
                         opponent_third_column={player2_third_column_dices}
                         owner={true}
+                        firfirst_columns_update={first_columns_update}
+                        second_columns_update={second_columns_update}
+                        third_columns_update={third_columns_update}
                     />
                 </div>
 

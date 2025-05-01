@@ -22,6 +22,9 @@ const Board = ({
   opponent_second_column,
   opponent_third_column,
   owner,
+  first_columns_update,
+  second_columns_update,
+  third_columns_update,
 }) => {
   //Cada uno de estos estados almacena los puntos totales de su columna
   const [first_column, setFirst_column] = useState(0);
@@ -29,18 +32,36 @@ const Board = ({
   const [third_column, setThird_column] = useState(0);
   // Controlamos a que jugador pertenece el tablero
   const [boardOwner, setBoardOwner] = useState(owner);
+  //Este useffect tiene como objetivo añadir los dados a la columna dónde se
+  // "droppea" un dado
   useEffect(() => {
-    setFirst_column(pointsColumn(first_column_dices));
-    console.log("Puntos columna 1: ", first_column);
-  }, [first_column_dices, opponent_first_column]);
+    switch (dice.column_id) {
+      case id[0]:
+        setFirst_column_dices((prev) => [...prev, dice.face]);
+        break;
+      case id[1]:
+        setSecond_column_dices((prev) => [...prev, dice.face]);
+        break;
+      case id[2]:
+        setThird_column_dices((prev) => [...prev, dice.face]);
+        break;
+      default:
+        break;
+    }
+  }, [dice]);
+  //Estos useEffects tienen como objetivos actualizar los puntos de cada columna
+  //cuando sea necesario
+  useEffect(() => {
+      setFirst_column(pointsColumn(first_column_dices));
+  }, [first_column_dices, opponent_first_column, first_columns_update]);
 
   useEffect(() => {
     setSecond_column(pointsColumn(second_column_dices));
-  }, [second_column_dices, opponent_second_column]);
+  }, [second_column_dices, opponent_second_column, second_columns_update]);
 
   useEffect(() => {
     setThird_column(pointsColumn(third_column_dices));
-  }, [third_column_dices, opponent_third_column]);
+  }, [third_column_dices, opponent_third_column, third_columns_update]);
 
   const { setNodeRef: setFirstColumnRef } = useDroppable({
     id: id[0],
@@ -64,21 +85,6 @@ const Board = ({
     },
   });
 
-  useEffect(() => {
-    switch (dice.column_id) {
-      case id[0]:
-        setFirst_column_dices((prev) => [...prev, dice.face]);
-        break;
-      case id[1]:
-        setSecond_column_dices((prev) => [...prev, dice.face]);
-        break;
-      case id[2]:
-        setThird_column_dices((prev) => [...prev, dice.face]);
-        break;
-      default:
-        break;
-    }
-  }, [dice]);
 
   return (
     <div className={boardContainer}>
