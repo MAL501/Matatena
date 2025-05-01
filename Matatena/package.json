@@ -1,6 +1,7 @@
 {
   "name": "matatena",
   "private": true,
+  "homepage": "https://MAL501.github.io/Matatena",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
