@@ -76,7 +76,6 @@ const Table = () => {
         setBoard2_enabled(turn);
         setDice(getDice());
     },[turn]);
-    //TODO: Los puntos del oponente no se actualizan al eliminar los dados
     //Eliminan los dados del oponente
     useEffect(() => {
         setPlayer2_first_column_dices((prev) => removeDices(prev, player1_first_column_dices[player1_first_column_dices.length - 1]));

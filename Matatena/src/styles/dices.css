@@ -103,16 +103,16 @@ position: absolute;
 /* Cara 6: Seis puntos en filas */
 .six span:nth-child(1),
 .six span:nth-child(4) {
-  top: 20%;
+  bottom:7px;
 }
 .six span:nth-child(2),
 .six span:nth-child(5) {
-  top: 50%;
+  top: -4px;
   transform: translateY(-50%);
 }
 .six span:nth-child(3),
 .six span:nth-child(6) {
-  bottom: 20%;
+  top: 9px;
 }
 
 .six span:nth-child(1),

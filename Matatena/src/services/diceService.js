@@ -1,5 +1,5 @@
 export const getDice = () =>{
-    return parseInt(Math.random()* 5 + 1) ;
+    return parseInt(Math.random()* 6 + 1) ;
 }
 
 export const addDiceToColumn = (column, dice) =>{
