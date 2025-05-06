@@ -1,9 +1,9 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Cup from "./Cup";
 import Board from "./Board";
 import CloseButton from "./CloseButton";
 import MessageDialog from "./MessageDialog";
-import { getDice, removeDices } from "../services/diceService";
+import { getDice, pointsColumn, removeDices } from "../services/diceService";
 import {DndContext} from '@dnd-kit/core';
 
 
@@ -41,9 +41,9 @@ const Table = () => {
     });
 
     //Cada uno de estos estados almacena todos los dados de su columna
-    const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([]);
-    const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([]);
-    const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([]);
+    const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([6,6,6]);
+    const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([6,6,6]);
+    const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([6,6]);
 
     const [player2_first_column_dices, setPlayer2_first_column_dices] = useState([]);
     const [player2_second_column_dices, setPlayer2_second_column_dices] = useState([]);
@@ -65,6 +65,16 @@ const Table = () => {
     
     const [winner, setWinner] = useState(null); // Estado para el ganador
     const [gameOver, setGameOver] = useState(false); // Estado para indicar si la partida terminó
+    //Esta función tiene como objetivo calcular el total de puntos de un jugador
+    //Recibe como parámetros cada una de sus columnas y devuelve el sumatorio de los puntos
+    const getTotalPoints = (column1,column2,column3) => {
+        let ret=0;
+        ret += pointsColumn(column1);
+        ret += pointsColumn(column2);
+        ret += pointsColumn(column3);
+        console.log(ret);
+        return ret;
+    }
 
     /**
      * Cuando turn sea true, será el turno del host o jugador 1
@@ -114,6 +124,8 @@ const Table = () => {
 
     //El siguiente useEffect tiene como objetivo mostrar un dialog cuando cualquiera de los dos jugadores gane
     useEffect(() => {
+        setPlayer1_points(getTotalPoints(player1_first_column_dices, player1_second_column_dices, player1_third_column_dices));
+        setPlayer2_points(getTotalPoints(player2_first_column_dices, player2_second_column_dices, player2_third_column_dices));
         if (
             player1_first_column_dices.length === 3 &&
             player1_second_column_dices.length === 3 &&
@@ -133,6 +145,7 @@ const Table = () => {
         }
     }, [player1_points, player2_points]);
 
+    
     const changeTurn = () =>{
         setTurn(!turn);
     }
@@ -242,7 +255,7 @@ const Table = () => {
                 </div>
 
                 {/* Mostrar el diálogo solo si la partida terminó */}
-                {gameOver && <MessageDialog winner={winner} reset={resetGame} />}
+                {gameOver && <MessageDialog winner={winner} reset={resetGame} p1={player1_points} p2={player2_points}/>}
             </div>
         </DndContext>
     );

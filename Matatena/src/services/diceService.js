@@ -37,7 +37,6 @@ export const pointsColumn = (column) => {
             points += Number(dice); 
         }
     }
-
     return points;
 };
 

@@ -1,34 +1,46 @@
 import React, { useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom'; // Importa Link para la navegación
+import { Link } from 'react-router-dom';
 
-const MessageDialog = ({ winner, reset }) => {
+const MessageDialog = ({ winner, reset, p1, p2 }) => {
     const dialogRef = useRef(null);
-
+    console.log('P1:', p1, 'P2:', p2);
+    let winnerScore = p1>p2 ? p1 : p2;
     useEffect(() => {
         if (winner) {
-            dialogRef.current.showModal(); // Abre el diálogo cuando hay un ganador
+            dialogRef.current.showModal();
+            // Forzar reset de estilos por si hay herencia no deseada
+            dialogRef.current.style.position = 'fixed';
+            dialogRef.current.style.top = '0';
+            dialogRef.current.style.left = '0';
+            dialogRef.current.style.right = '0';
+            dialogRef.current.style.bottom = '0';
         }
     }, [winner]);
 
     return (
         <dialog
             ref={dialogRef}
-            className="fixed inset-0 flex justify-center items-center bg-black/50 text-white text-xl font-bold"
+            className="fixed top-0 left-0 w-full h-full bg-transparent backdrop:bg-black/50 backdrop:backdrop-blur-sm p-0 border-none overflow-hidden"
+            style={{
+                display: winner ? 'block' : 'none', // Alternativa para navegadores antiguos
+                margin: 0,
+                zIndex: 9999
+            }}
         >
-            <div className="bg-white text-black p-8 rounded-lg shadow-lg flex flex-col items-center">
-                <p className="mb-4">¡Ganó el {winner}!</p>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-[600px] bg-white rounded-lg shadow-xl p-8 flex flex-col items-center">
+                <p className="mb-4 text-2xl font-bold">¡Ganó {winner}!</p>
+                <p className="mb-6 text-lg">Puntos: {winnerScore}</p>
+                
                 <div className="flex gap-4">
-                    {/* Botón para volver al menú principal */}
                     <Link
                         to="/"
-                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
                     >
                         Menú Principal
                     </Link>
-                    {/* Botón para reiniciar la partida */}
                     <button
                         onClick={reset}
-                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition"
+                        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
                     >
                         Volver a Jugar
                     </button>
