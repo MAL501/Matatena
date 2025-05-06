@@ -4,7 +4,7 @@ import Dice from './Dice';
 
 // Constantes para las clases de Tailwind
 const columnStyle = "flex flex-col";
-const cellStyle = "flex justify-center items-center p-8 border-2 border-black border-b-4 rounded-sm w-full h-full mb-[5%]"; // Ajuste del tamaño, padding y borde inferior
+const cellStyle = "inline-flex justify-center items-center p-9 border-2 border-black rounded-xl cursor-grab active:cursor-grabbing bg-white-100 shadow-md mb-[5%]"; // Estilos actualizados
 const pointsTextStyle = "text-center mb-2 text-lg font-bold"; // Estilo para el texto de puntos
 
 const Column = ({ points, setNodeRef, dice, owner }) => {

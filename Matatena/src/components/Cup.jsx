@@ -6,7 +6,7 @@ import Dice from './Dice';
 const Cup = ({ id, face }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: id,
-    data: {face: face},
+    data: { face: face },
   });
 
   // Estilos dinámicos para el movimiento
@@ -18,16 +18,15 @@ const Cup = ({ id, face }) => {
 
   return (
     <div
-        ref={setNodeRef}
-        {...listeners}
-        {...attributes}
-        className="flex justify-center items-center p-8 border-2 border-black cursor-grab active:cursor-grabbing"
-        style={style} 
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      className="inline-flex justify-center items-center p-9 border-2 border-black rounded-xl cursor-grab active:cursor-grabbing bg-white-100 shadow-md"
+      style={style}
     >
-        <Dice face={face} />
+      <Dice face={face} />
     </div>
   );
 };
-
 
 export default Cup;

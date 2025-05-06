@@ -41,9 +41,9 @@ const Table = () => {
     });
 
     //Cada uno de estos estados almacena todos los dados de su columna
-    const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([6,6,6]);
-    const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([6,6,6]);
-    const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([6,6]);
+    const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([]);
+    const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([]);
+    const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([]);
 
     const [player2_first_column_dices, setPlayer2_first_column_dices] = useState([]);
     const [player2_second_column_dices, setPlayer2_second_column_dices] = useState([]);
