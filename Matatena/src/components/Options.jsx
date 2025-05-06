@@ -5,6 +5,7 @@ const contenedor = "flex flex-col justify-center items-center h-screen";
 const contenedorTodoAncho = "w-64 space-y-3";
 const contenedorColumnas = "grid grid-cols-2 gap-2";
 const todoAncho = "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition";
+const todoAnchoMorado = "w-full bg-purple-900 text-white py-2 rounded-lg hover:bg-blue-700 transition";
 const columna = "w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-700 transition";
 const title ="text-4xl font-bold mb-6 text-center";
 export default function Options() {
@@ -20,30 +21,11 @@ export default function Options() {
               Jugar
             </button>
           </Link>
-          <Link to={"/instructions"} className="block">
-            <button className={todoAncho}>
-              Instrucciones
+          <a className="block" target='_blank' href="https://forms.gle/TbkAbQmDyzxoj1en9">
+            <button className={todoAnchoMorado}>
+              Form
             </button>
-          </Link>
-          <Link to={"/ranking"} className="block">
-            <button className={todoAncho}>
-              Ranking
-            </button>
-          </Link>
-
-          {/* Botones inferiores en una misma fila */}
-          <div className={contenedorColumnas}>
-            <Link to={"/login"} className="block">
-              <button className={columna}>
-                Login
-              </button>
-            </Link>
-            <Link to={"/register"} className="block">
-              <button className={columna}>
-                Register
-              </button>
-            </Link>
-          </div>
+          </a>
         </div>
       </div>
     </div>
