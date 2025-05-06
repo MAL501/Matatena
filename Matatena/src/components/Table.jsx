@@ -12,13 +12,16 @@ const Table = () => {
     //Controlan los puntos de cada jugador
     const [player1_points, setPlayer1_points] = useState(0);
     const [player2_points, setPlayer2_points] = useState(0);
+    //Nombres de los jugadores
+    const [player1_name, setPlayer1_name] = useState("Jugador 1");
+    const [player2_name, setPlayer2_name] = useState("Jugador 2");
 
 //--------------------Variables del cubilete----------------------
     const CUP_IP = 0;
 
     //Posiciones del cubilete	
-    const CUP_PLAYER2_POSITION = "absolute w-[15%] h-[25%] justify-center items-center border-4 p-4 border-red-950 rounded-xl top-[25%] right-[15%]";
-    const CUP_PLAYER1_POSITION = "absolute w-[15%] h-[25%] justify-center items-center border-4 p-4 border-red-950 rounded-xl bottom-[25%] left-[15%]";
+    const CUP_PLAYER2_POSITION = "absolute w-[15%] h-[25%] justify-center items-center  p-4  top-[25%] right-[15%]";
+    const CUP_PLAYER1_POSITION = "absolute w-[15%] h-[25%] justify-center items-right  p-4  bottom-[25%] left-[15%]";
 
     //Indica quién debe tener el cubilete
     const [cup_position, setCup_position]=useState(CUP_PLAYER1_POSITION);
@@ -226,7 +229,10 @@ const Table = () => {
                         third_columns_update={third_columns_update}
                     />
                 </div>
-
+                <p>{player2_name}</p>
+                <p className="font-extrabold">{player2_points}</p>
+                <p className="font-extrabold">{player1_points}</p>
+                <p>{player1_name}</p>
                 {/* Board inferior (Host) */}
                 <div className="mt-[1%]">
                     <Board 
@@ -249,7 +255,6 @@ const Table = () => {
                     />
                 </div>
 
-                {/* Cup inferior izquierdo */}
                 <div className={cup_position}>
                     <Cup id={CUP_IP} face={dice}/>
                 </div>
