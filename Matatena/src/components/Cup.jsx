@@ -21,7 +21,7 @@ const Cup = ({ id, face }) => {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className="inline-flex justify-center items-center p-9 border-2 border-black rounded-xl cursor-grab active:cursor-grabbing bg-white-100 shadow-md"
+      className="inline-flex justify-center items-center p-9 border-2 border-black rounded-xl cursor-grab active:cursor-grabbing bg-white-100 shadow-md touch-none"
       style={style}
     >
       <Dice face={face} />

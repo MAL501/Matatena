@@ -29,29 +29,14 @@ export default function Options() {
         >
           Instrucciones
         </button>
-        <Link to={"/ranking"} className="block">
-          <button className={todoAncho}>
-            Ranking
-          </button>
-        </Link>
+
         <a className="block" target='_blank' href="https://forms.gle/TbkAbQmDyzxoj1en9">
           <button className={todoAnchoMorado}>
             Danos tu opinión
           </button>
         </a>
         {/* Botones inferiores en una misma fila */}
-        <div className={contenedorColumnas}>
-          <Link to={"/login"} className="block">
-            <button className={columna}>
-              Login
-            </button>
-          </Link>
-          <Link to={"/register"} className="block">
-            <button className={columna}>
-              Register
-            </button>
-          </Link>
-        </div>
+
       </div>
       {/* Dialog de instrucciones */}
       <InstructionsDialog open={openInstructions} setOpen={setOpenInstructions} />
