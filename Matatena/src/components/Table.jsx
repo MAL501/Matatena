@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import '../styles/cup.css';
 import Cup from "./Cup";
 import Board from "./Board";
 import CloseButton from "./CloseButton";
@@ -20,8 +21,8 @@ const Table = () => {
     const CUP_IP = 0;
 
     //Posiciones del cubilete	
-    const CUP_PLAYER2_POSITION = "absolute w-[15%] h-[25%] justify-center items-center  p-4  top-[25%] right-[15%]";
-    const CUP_PLAYER1_POSITION = "absolute w-[15%] h-[25%] justify-center items-right  p-4  bottom-[25%] left-[15%]";
+    const CUP_PLAYER2_POSITION = "cup-player2";
+    const CUP_PLAYER1_POSITION = "cup-player1";
 
     //Indica quién debe tener el cubilete
     const [cup_position, setCup_position]=useState(CUP_PLAYER1_POSITION);
