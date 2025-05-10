@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Options from './components/Options'
 import './App.css'
 import Table from './components/Table';
+import InstructionsDialog from './components/InstructionsDialog';
 
 function App() {
 
@@ -10,7 +11,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Options />} />
         <Route path='/play' element={<Table />}/>
-        <Route path='/instructions' />
+        <Route path='/instructions' element={<InstructionsDialog />}/>
         <Route path='/ranking' />
         <Route path='/login' />
         <Route path='/register' />

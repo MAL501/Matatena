@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from "react-router-dom";
+import InstructionsDialog from './InstructionsDialog';
 
 const contenedor = "flex justify-center items-center h-screen";
 const contenedorTodoAncho = "w-64 space-y-3";
@@ -9,6 +10,9 @@ const todoAnchoMorado = "w-full bg-purple-900 text-white py-2 rounded-lg hover:b
 const columna = "w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-700 transition";
 
 export default function Options() {
+  // Este UseState sirve para abrir o cerrar el dialog de instrucciones
+  const [openInstructions, setOpenInstructions] = useState(false);
+
   return (
     <div className={contenedor}>
       {/* Contenedor de los botones con un ancho fijo */}
@@ -19,21 +23,22 @@ export default function Options() {
             Jugar
           </button>
         </Link>
-        <Link to={"/instructions"} className="block">
-          <button className={todoAncho}>
-            Instrucciones
-          </button>
-        </Link>
+        <button
+          onClick={() => setOpenInstructions(true)} // Abre el diálogo de instrucciones
+          className={todoAncho}
+        >
+          Instrucciones
+        </button>
         <Link to={"/ranking"} className="block">
           <button className={todoAncho}>
             Ranking
           </button>
         </Link>
         <a className="block" target='_blank' href="https://forms.gle/TbkAbQmDyzxoj1en9">
-            <button className={todoAnchoMorado}>
-              Form
-            </button>
-          </a>
+          <button className={todoAnchoMorado}>
+            Danos tu opinión
+          </button>
+        </a>
         {/* Botones inferiores en una misma fila */}
         <div className={contenedorColumnas}>
           <Link to={"/login"} className="block">
@@ -48,6 +53,8 @@ export default function Options() {
           </Link>
         </div>
       </div>
+      {/* Dialog de instrucciones */}
+      <InstructionsDialog open={openInstructions} setOpen={setOpenInstructions} />
     </div>
   );
 }

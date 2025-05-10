@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 
 const MessageDialog = ({ winner, reset, p1, p2 }) => {
     const dialogRef = useRef(null);
-    console.log('P1:', p1, 'P2:', p2);
     let winnerScore = p1>p2 ? p1 : p2;
     useEffect(() => {
         if (winner) {
