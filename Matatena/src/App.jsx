@@ -11,10 +11,6 @@ function App() {
       <Routes>
         <Route path='/' element={<Options />} />
         <Route path='/play' element={<Table />}/>
-        <Route path='/instructions' element={<InstructionsDialog />}/>
-        <Route path='/ranking' />
-        <Route path='/login' />
-        <Route path='/register' />
       </Routes>
     </BrowserRouter>
   )
