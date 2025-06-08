@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { gameService } from '../services/gameService';
+import { ROUTES, redirectToRoute } from '../utils/routes';
 
 const inputStyle = "w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400";
 const buttonStyle = "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed";
@@ -33,9 +34,9 @@ const GameSelector = () => {
       setCreatedGameCode(gameData.gameCode);
       setSuccess(`¡Partida creada! Código: ${gameData.gameCode}`);
       
-      // Redirigir a la sala de espera después de un momento
+      // Redirigir a la sala de espera
       setTimeout(() => {
-        window.location.href = `/waiting-room/${gameData.gameId}`;
+        redirectToRoute(ROUTES.WAITING_ROOM(gameData.gameId));
       }, 2000);
       
     } catch (error) {
@@ -70,7 +71,7 @@ const GameSelector = () => {
       
       // Redirigir al juego
       setTimeout(() => {
-        window.location.href = `/game/${gameData.game.id}`;
+        redirectToRoute(ROUTES.GAME(gameData.game.id));
       }, 1000);
       
     } catch (error) {
@@ -83,7 +84,7 @@ const GameSelector = () => {
 
   // Función para jugar en modo local
   const handlePlayLocal = () => {
-    window.location.href = '/play';
+    redirectToRoute(ROUTES.PLAY_LOCAL);
   };
 
   // Función para copiar código al portapapeles

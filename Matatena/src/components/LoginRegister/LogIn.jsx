@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 
-
 const inputStyle = "w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400";
 const buttonStyle = "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed";
 const errorStyle = "text-red-500 text-sm mb-2 text-center";
