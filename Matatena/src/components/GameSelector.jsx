@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { gameService } from '../services/gameService';
+<<<<<<< HEAD
+=======
+import { ROUTES, redirectToRoute } from '../utils/routes';
+>>>>>>> HEAD@{1}
 
 const inputStyle = "w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400";
 const buttonStyle = "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed";
@@ -33,10 +37,17 @@ const GameSelector = () => {
       setCreatedGameCode(gameData.gameCode);
       setSuccess(`¡Partida creada! Código: ${gameData.gameCode}`);
       
+<<<<<<< HEAD
       // Redirigir a la sala de espera después de un momento
       setTimeout(() => {
         window.location.href = `/waiting-room/${gameData.gameId}`;
       }, 5000);
+=======
+      // Redirigir a la sala de espera
+      setTimeout(() => {
+        redirectToRoute(ROUTES.WAITING_ROOM(gameData.gameId));
+      }, 2000);
+>>>>>>> HEAD@{1}
       
     } catch (error) {
       setError(error.message || 'Error al crear la partida');
@@ -70,8 +81,13 @@ const GameSelector = () => {
       
       // Redirigir al juego
       setTimeout(() => {
+<<<<<<< HEAD
         window.location.href = `/game/${gameData.game.id}`;
       }, 5000);
+=======
+        redirectToRoute(ROUTES.GAME(gameData.game.id));
+      }, 1000);
+>>>>>>> HEAD@{1}
       
     } catch (error) {
       setError(error.message || 'Error al unirse a la partida');
@@ -83,7 +99,11 @@ const GameSelector = () => {
 
   // Función para jugar en modo local
   const handlePlayLocal = () => {
+<<<<<<< HEAD
     window.location.href = '/Matatena/play';
+=======
+    redirectToRoute(ROUTES.PLAY_LOCAL);
+>>>>>>> HEAD@{1}
   };
 
   // Función para copiar código al portapapeles

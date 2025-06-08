@@ -4,6 +4,10 @@ import InstructionsDialog from './InstructionsDialog';
 import SignIn from './LoginRegister/SignIn';
 import LogIn from './LoginRegister/LogIn';
 import GameSelector from './GameSelector';
+<<<<<<< HEAD
+=======
+import { ROUTES } from '../utils/routes';
+>>>>>>> HEAD@{1}
 
 const contenedor = "flex justify-center items-center h-screen";
 const contenedorTodoAncho = "w-64 space-y-3";
@@ -41,7 +45,11 @@ export default function Options() {
           Instrucciones
         </button>
         
+<<<<<<< HEAD
         <Link to={"/ranking"} className="block">
+=======
+        <Link to={ROUTES.RANKING} className="block">
+>>>>>>> HEAD@{1}
           <button className={todoAncho}>
             Ranking
           </button>
