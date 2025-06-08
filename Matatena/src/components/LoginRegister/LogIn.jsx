@@ -10,34 +10,52 @@ const LogIn = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setSuccess('');
 
-    try {
-      const response = await fetch(`http://localhost:8080/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password })
-      });
-      if (response.ok) {
-        const data = await response.json();
+  try {
+    const response = await fetch(`http://localhost:8080/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ username, password })
+    });
+    
+    const data = await response.json();
+    
+    if (response.ok) {
+      // Estructura actualizada para nuestro backend
+      if (data.status === 'success' && data.data && data.data.tokens) {
         // Almacena el JWT en localStorage
-        localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.data.tokens.accessToken);
+        
+        localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
+        
+        if (data.data.user) {
+          localStorage.setItem('username', data.data.user.username);
+        }
+        
         setSuccess('Login exitoso.');
         setUsername('');
         setPassword('');
       } else {
-        setError('Usuario o contraseña incorrectos.');
-        console.error('Error en el login:', response.statusText);
+        setError('Formato de respuesta inesperado.');
+        console.error('Formato de respuesta inesperado:', data);
       }
-    } catch {
-      setError('Error en el login.');
+    } else {
+      // Mostrar mensaje de error específico si está disponible
+      const errorMessage = data.message || 'Usuario o contraseña incorrectos.';
+      setError(errorMessage);
+      console.error('Error en el login:', data);
     }
-  };
+  } catch (error) {
+    setError('Error en el login. Comprueba la conexión al servidor.');
+    console.error('Error en la petición:', error);
+  }
+};
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto bg-white rounded-xl shadow-md p-8 flex flex-col items-center">

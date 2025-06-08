@@ -21,6 +21,7 @@ export default function Options() {
     <div className={contenedor}>
       {/* Contenedor de los botones con un ancho fijo */}
       <div className={contenedorTodoAncho}>
+        <h1 className="text-4xl w-full font-bold mb-10 text-center">MATATENA</h1>
         {/* Botones superiores */}
         <Link to={"/play"} className="block">
           <button className={todoAncho}>

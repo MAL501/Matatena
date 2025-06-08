@@ -204,7 +204,13 @@ const Table = () => {
         });
         changeTurn();
     }
-
+    useEffect(() => {
+        // Este código solo se ejecuta en el cliente
+        const storedUsername = localStorage.getItem("username");
+        if (storedUsername) {
+        setPlayer1_name(storedUsername);
+        }
+    }, []); // Array vacío = solo se ejecuta una vez al montar
     return (
         <DndContext onDragEnd={handleDragEnd}>
             <div className="relative w-full h-screen flex flex-col justify-center items-center">
