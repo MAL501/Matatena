@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import InstructionsDialog from './InstructionsDialog';
 import SignIn from './LoginRegister/SignIn';
 import LogIn from './LoginRegister/LogIn';
+import GameSelector from './GameSelector';
 
 const contenedor = "flex justify-center items-center h-screen";
 const contenedorTodoAncho = "w-64 space-y-3";
@@ -12,48 +13,55 @@ const todoAnchoMorado = "w-full bg-purple-900 text-white py-2 rounded-lg hover:b
 const columna = "w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-700 transition";
 
 export default function Options() {
-  // Estos UseState sirven para abrir o cerrar los distintos dialogs de la aplicación
+  // Estados para abrir o cerrar los distintos dialogs de la aplicación
   const [openInstructions, setOpenInstructions] = useState(false);
   const [openRegister, setOpenRegister] = useState(false);
   const [openLogin, setOpenLogin] = useState(false);
+  const [openGameSelector, setOpenGameSelector] = useState(false); // Nuevo estado
 
   return (
     <div className={contenedor}>
       {/* Contenedor de los botones con un ancho fijo */}
       <div className={contenedorTodoAncho}>
         <h1 className="text-4xl w-full font-bold mb-10 text-center">MATATENA</h1>
+        
         {/* Botones superiores */}
-        <Link to={"/play"} className="block">
-          <button className={todoAncho}>
-            Jugar
-          </button>
-        </Link>
+        {/* Cambiar el botón "Jugar" para abrir el selector de modo */}
         <button
-          onClick={() => setOpenInstructions(true)} // Abre el diálogo de instrucciones
+          onClick={() => setOpenGameSelector(true)}
+          className={todoAncho}
+        >
+          Jugar
+        </button>
+        
+        <button
+          onClick={() => setOpenInstructions(true)}
           className={todoAncho}
         >
           Instrucciones
         </button>
+        
         <Link to={"/ranking"} className="block">
           <button className={todoAncho}>
             Ranking
           </button>
         </Link>
+        
         <a className="block" target='_blank' href="https://forms.gle/TbkAbQmDyzxoj1en9">
           <button className={todoAnchoMorado}>
             Danos tu opinión
           </button>
         </a>
+        
         {/* Botones inferiores en una misma fila */}
         <div className={contenedorColumnas}>
-          {/* Botón para abrir el diálogo de login */}
           <button
             className={columna}
             onClick={() => setOpenLogin(true)}
           >
             Login
           </button>
-          {/* Botón para abrir el diálogo de registro */}
+          
           <button
             className={columna}
             onClick={() => setOpenRegister(true)}
@@ -62,6 +70,22 @@ export default function Options() {
           </button>
         </div>
       </div>
+
+      {/* Dialog de selector de juego */}
+      {openGameSelector && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-xl p-6 relative max-w-md w-full mx-4">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-xl"
+              onClick={() => setOpenGameSelector(false)}
+            >
+              ×
+            </button>
+            <GameSelector onClose={() => setOpenGameSelector(false)} />
+          </div>
+        </div>
+      )}
+
       {/* Dialog de instrucciones */}
       {openInstructions && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -76,6 +100,7 @@ export default function Options() {
           </div>
         </div>
       )}
+
       {/* Dialog de login */}
       {openLogin && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -90,6 +115,7 @@ export default function Options() {
           </div>
         </div>
       )}
+
       {/* Dialog de registro */}
       {openRegister && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">

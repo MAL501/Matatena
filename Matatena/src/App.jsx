@@ -11,6 +11,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Options />} />
         <Route path='/play' element={<Table />}/>
+        <Route path='/waiting-room' element={<Table />}/>
       </Routes>
     </BrowserRouter>
   )
