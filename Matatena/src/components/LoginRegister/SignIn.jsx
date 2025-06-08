@@ -59,11 +59,7 @@ const SignUp = () => {
       const result = await register(username, password);
       
       if (result.success) {
-<<<<<<< HEAD
-        setSuccess('Registro exitoso. Puedes iniciar sesión ahora.');
-=======
         setSuccess('Registro exitoso. Redirigiendo...');
->>>>>>> HEAD@{1}
         setUsername('');
         setPassword('');
         setRepeatPassword('');

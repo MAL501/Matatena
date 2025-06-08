@@ -2,10 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useGame } from '../hooks/useGame';
-<<<<<<< HEAD
-=======
 import { ROUTES, navigateToRoute } from '../utils/routes';
->>>>>>> HEAD@{1}
 
 const WaitingRoom = () => {
   const { gameId } = useParams();
@@ -17,11 +14,7 @@ const WaitingRoom = () => {
   // Redirigir si no está autenticado
   useEffect(() => {
     if (!isAuthenticated) {
-<<<<<<< HEAD
-      navigate('/');
-=======
       navigateToRoute(navigate, ROUTES.HOME);
->>>>>>> HEAD@{1}
     }
   }, [isAuthenticated, navigate]);
 
@@ -29,11 +22,7 @@ const WaitingRoom = () => {
   useEffect(() => {
     if (gameState.gameStarted && gameState.opponentName) {
       setTimeout(() => {
-<<<<<<< HEAD
-        navigate(`/game/${gameId}`);
-=======
         navigateToRoute(navigate, ROUTES.GAME(gameId));
->>>>>>> HEAD@{1}
       }, 2000);
     }
   }, [gameState.gameStarted, gameState.opponentName, gameId, navigate]);
@@ -54,11 +43,7 @@ const WaitingRoom = () => {
   // Función para cancelar partida
   const cancelGame = () => {
     if (window.confirm('¿Estás seguro de que quieres cancelar la partida?')) {
-<<<<<<< HEAD
-      navigate('/');
-=======
       navigateToRoute(navigate, ROUTES.HOME);
->>>>>>> HEAD@{1}
     }
   };
 
@@ -81,11 +66,7 @@ const WaitingRoom = () => {
           <h2 className="text-xl font-bold text-gray-800 mb-2">Error</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
-<<<<<<< HEAD
-            onClick={() => navigate('/')}
-=======
             onClick={() => navigate('/Matatena/')}
->>>>>>> HEAD@{1}
             className="bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition"
           >
             Volver al menú
@@ -169,11 +150,7 @@ const WaitingRoom = () => {
         <div className="space-y-3">
           {gameState.gameStarted && gameState.opponentName && (
             <button
-<<<<<<< HEAD
-              onClick={() => navigate(`/game/${gameId}`)}
-=======
               onClick={() => navigate(`/Matatena/game/${gameId}`)}
->>>>>>> HEAD@{1}
               className="w-full bg-green-500 text-white py-3 rounded-lg hover:bg-green-600 transition font-semibold"
             >
               Ir al Juego
@@ -188,11 +165,7 @@ const WaitingRoom = () => {
           </button>
           
           <button
-<<<<<<< HEAD
-            onClick={() => navigate('/')}
-=======
             onClick={() => navigate('/Matatena/')}
->>>>>>> HEAD@{1}
             className="w-full bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition"
           >
             Volver al Menú

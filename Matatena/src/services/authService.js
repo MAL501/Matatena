@@ -10,10 +10,7 @@ export const authService = {
     if (data.status === 'success' && data.data?.tokens) {
       localStorage.setItem('token', data.data.tokens.accessToken);
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
-<<<<<<< HEAD
-=======
       localStorage.setItem('userId', data.data.user.id);
->>>>>>> HEAD@{1}
       localStorage.setItem('username', data.data.user.username);
       return data.data;
     }
@@ -30,10 +27,7 @@ export const authService = {
     if (data.status === 'success' && data.data?.tokens) {
       localStorage.setItem('token', data.data.tokens.accessToken);
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
-<<<<<<< HEAD
-=======
       localStorage.setItem('userId', data.data.user.id);
->>>>>>> HEAD@{1}
       localStorage.setItem('username', data.data.user.username);
       return data.data;
     }
@@ -44,10 +38,7 @@ export const authService = {
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('refreshToken');
-<<<<<<< HEAD
-=======
     localStorage.removeItem('userId');
->>>>>>> HEAD@{1}
     localStorage.removeItem('username');
   },
 
@@ -57,10 +48,7 @@ export const authService = {
 
   getCurrentUser() {
     return {
-<<<<<<< HEAD
-=======
       id: localStorage.getItem('userId'),
->>>>>>> HEAD@{1}
       username: localStorage.getItem('username'),
     };
   }
