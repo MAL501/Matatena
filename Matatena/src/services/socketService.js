@@ -29,6 +29,8 @@ class SocketService {
       // Usar URL de desarrollo si no hay una configurada
       const socketUrl = SOCKET_URL || "http://localhost:8080"
 
+      console.log("🔌 Conectando socket a:", socketUrl)
+
       this.socket = io(socketUrl, {
         auth: {
           token: token,
@@ -51,7 +53,7 @@ class SocketService {
 
   _setupEventListeners() {
     this.socket.on("connect", () => {
-      console.log("Socket conectado:", this.socket.id)
+      console.log("✅ Socket conectado:", this.socket.id)
       this.isConnected = true
       this.reconnectAttempts = 0
       this._notifyListeners("onConnect", { socketId: this.socket.id })
@@ -62,7 +64,7 @@ class SocketService {
     })
 
     this.socket.on("disconnect", (reason) => {
-      console.log("Socket desconectado:", reason)
+      console.log("❌ Socket desconectado:", reason)
       this.isConnected = false
       this._notifyListeners("onDisconnect", { reason })
       this._notifyListeners("onNotification", {
@@ -77,7 +79,7 @@ class SocketService {
     })
 
     this.socket.on("connect_error", (error) => {
-      console.error("Error de conexión socket:", error)
+      console.error("❌ Error de conexión socket:", error)
       this._notifyListeners("onError", { message: "Error de conexión", details: error.message })
       this._notifyListeners("onNotification", {
         type: "error",
@@ -89,7 +91,7 @@ class SocketService {
 
     // Eventos específicos del juego
     this.socket.on(SOCKET_EVENTS.GAME_JOINED, (data) => {
-      console.log("Game joined:", data)
+      console.log("🎮 Evento GAME_JOINED recibido:", data)
       this._notifyListeners("onGameJoined", data)
       this._notifyListeners("onNotification", {
         type: "info",
@@ -98,7 +100,7 @@ class SocketService {
     })
 
     this.socket.on(SOCKET_EVENTS.GAME_STARTED, (data) => {
-      console.log("Game started:", data)
+      console.log("🚀 Evento GAME_STARTED recibido:", data)
       this._notifyListeners("onGameStarted", data)
       this._notifyListeners("onNotification", {
         type: "success",
@@ -107,12 +109,19 @@ class SocketService {
     })
 
     this.socket.on(SOCKET_EVENTS.PLAY_MADE, (data) => {
-      console.log("Play made:", data)
+      console.log("🎯 Evento PLAY_MADE recibido:", data)
+      console.log("🎯 Detalles de la jugada:", {
+        dice: data.dice,
+        column: data.column,
+        userId: data.userId,
+        gameId: data.gameId,
+        timestamp: new Date().toISOString(),
+      })
       this._notifyListeners("onPlayMade", data)
     })
 
     this.socket.on(SOCKET_EVENTS.GAME_ENDED, (data) => {
-      console.log("Game ended:", data)
+      console.log("🏁 Evento GAME_ENDED recibido:", data)
       this._notifyListeners("onGameEnded", data)
 
       const message =
@@ -127,7 +136,7 @@ class SocketService {
     })
 
     this.socket.on(SOCKET_EVENTS.OPPONENT_DISCONNECTED, (data) => {
-      console.log("Opponent disconnected:", data)
+      console.log("❌ Evento OPPONENT_DISCONNECTED recibido:", data)
       this._notifyListeners("onOpponentDisconnect", data)
       this._notifyListeners("onNotification", {
         type: "warning",
@@ -136,19 +145,24 @@ class SocketService {
     })
 
     this.socket.on(SOCKET_EVENTS.OPPONENT_RECONNECTED, (data) => {
-      console.log("Opponent reconnected:", data)
+      console.log("✅ Evento OPPONENT_RECONNECTED recibido:", data)
       this._notifyListeners("onOpponentReconnect", data)
       this._notifyListeners("onNotification", {
         type: "success",
         message: "Tu oponente se ha reconectado",
       })
     })
+
+    // Listener genérico para todos los eventos
+    this.socket.onAny((eventName, ...args) => {
+      console.log("📡 Evento recibido:", eventName, args)
+    })
   }
 
   _attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`Intento de reconexión ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`)
+      console.log(`🔄 Intento de reconexión ${this.reconnectAttempts}/${this.maxReconnectAttempts}...`)
 
       this._notifyListeners("onNotification", {
         type: "info",
@@ -161,7 +175,7 @@ class SocketService {
         }
       }, this.reconnectInterval)
     } else {
-      console.error("Máximo de intentos de reconexión alcanzado")
+      console.error("❌ Máximo de intentos de reconexión alcanzado")
       this._notifyListeners("onNotification", {
         type: "error",
         message: "No se pudo reconectar al servidor",
@@ -171,6 +185,7 @@ class SocketService {
 
   disconnect() {
     if (this.socket) {
+      console.log("🔌 Desconectando socket...")
       this.socket.disconnect()
       this.socket = null
       this.isConnected = false
@@ -180,40 +195,56 @@ class SocketService {
   // Métodos para unirse y enviar eventos de juego
   joinGame(gameId) {
     if (this.socket && this.isConnected) {
-      console.log("Joining game:", gameId)
+      console.log("🏠 Enviando JOIN_GAME:", gameId)
       this.socket.emit(SOCKET_EVENTS.JOIN_GAME, { gameId })
     } else {
-      console.error("No se puede unir al juego: socket no conectado")
+      console.error("❌ No se puede unir al juego: socket no conectado")
       this._notifyListeners("onError", { message: "No se puede unir al juego: no hay conexión" })
     }
   }
 
+  // Mejorar el manejo de errores en makePlay
   makePlay(gameId, dice, column) {
     if (this.socket && this.isConnected) {
-      console.log("Making play:", { gameId, dice, column })
-      this.socket.emit(SOCKET_EVENTS.MAKE_PLAY, { gameId, dice, column })
+      const playData = { gameId, dice, column }
+      console.log("🎯 Enviando MAKE_PLAY:", playData)
+      console.log("🎯 Socket ID:", this.socket.id)
+      console.log("🎯 Socket conectado:", this.isConnected)
+
+      try {
+        this.socket.emit(SOCKET_EVENTS.MAKE_PLAY, playData)
+        console.log("✅ Evento MAKE_PLAY enviado exitosamente")
+        return true
+      } catch (error) {
+        console.error("❌ Error al enviar MAKE_PLAY:", error)
+        this._notifyListeners("onError", { message: "Error al enviar jugada", details: error.message })
+        return false
+      }
     } else {
-      console.error("No se puede realizar la jugada: socket no conectado")
+      console.error("❌ No se puede realizar la jugada: socket no conectado")
+      console.error("❌ Socket:", this.socket)
+      console.error("❌ isConnected:", this.isConnected)
       this._notifyListeners("onError", { message: "No se puede realizar la jugada: no hay conexión" })
+      return false
     }
   }
 
   endGame(gameId, winnerId) {
     if (this.socket && this.isConnected) {
-      console.log("Ending game:", { gameId, winnerId })
+      console.log("🏁 Enviando END_GAME:", { gameId, winnerId })
       this.socket.emit(SOCKET_EVENTS.END_GAME, { gameId, winnerId })
     } else {
-      console.error("No se puede finalizar el juego: socket no conectado")
+      console.error("❌ No se puede finalizar el juego: socket no conectado")
       this._notifyListeners("onError", { message: "No se puede finalizar el juego: no hay conexión" })
     }
   }
 
   surrender(gameId) {
     if (this.socket && this.isConnected) {
-      console.log("Surrendering game:", gameId)
+      console.log("🏳️ Enviando SURRENDER:", gameId)
       this.socket.emit(SOCKET_EVENTS.SURRENDER, { gameId })
     } else {
-      console.error("No se puede rendirse: socket no conectado")
+      console.error("❌ No se puede rendirse: socket no conectado")
       this._notifyListeners("onError", { message: "No se puede rendirse: no hay conexión" })
     }
   }
@@ -237,7 +268,7 @@ class SocketService {
         try {
           callback(data)
         } catch (error) {
-          console.error(`Error en listener de ${event}:`, error)
+          console.error(`❌ Error en listener de ${event}:`, error)
         }
       })
     }

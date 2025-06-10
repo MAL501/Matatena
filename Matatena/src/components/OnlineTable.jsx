@@ -1,35 +1,28 @@
 "use client"
 
 import { useEffect, useState, useCallback } from "react"
-import { useParams, useNavigate } from "react-router-dom"
 import "../styles/cup.css"
 import Cup from "./Cup"
 import Board from "./Board"
 import CloseButton from "./CloseButton"
 import MessageDialog from "./MessageDialog"
-import { getDice, pointsColumn, removeDices } from "../services/diceService"
+import { getDice, pointsColumn } from "../services/diceService"
 import { DndContext } from "@dnd-kit/core"
+import { useParams, useNavigate } from "react-router-dom"
 import { socketService } from "../services/socketService"
-import { showNotification } from "./NotificationContainer"
-import { NOTIFICATION_TYPES, GAME_STATES } from "../utils/constants"
+import { gameService } from "../services/gameService"
+import { removeDices } from "../services/diceService"
 
 const OnlineTable = () => {
   const { gameId } = useParams()
   const navigate = useNavigate()
-
-  // Estados del juego online
-  const [isMyTurn, setIsMyTurn] = useState(true)
-  const [opponentName, setOpponentName] = useState("Oponente")
-  const [myName, setMyName] = useState("Tú")
-  const [gameStatus, setGameStatus] = useState(GAME_STATES.WAITING)
-  const [connectionStatus, setConnectionStatus] = useState("connected")
-  const [opponentConnected, setOpponentConnected] = useState(true)
 
   //--------------------Variables del jugador----------------------
   const [player1_points, setPlayer1_points] = useState(0)
   const [player2_points, setPlayer2_points] = useState(0)
   const [player1_name, setPlayer1_name] = useState("Jugador 1")
   const [player2_name, setPlayer2_name] = useState("Jugador 2")
+  const [isHost, setIsHost] = useState(false)
 
   //--------------------Variables del cubilete----------------------
   const CUP_IP = 0
@@ -49,7 +42,6 @@ const OnlineTable = () => {
     face: 0,
   })
 
-  // Estados de las columnas
   const [player1_first_column_dices, setPlayer1_first_column_dices] = useState([])
   const [player1_second_column_dices, setPlayer1_second_column_dices] = useState([])
   const [player1_third_column_dices, setPlayer1_third_column_dices] = useState([])
@@ -70,239 +62,268 @@ const OnlineTable = () => {
   const [winner, setWinner] = useState(null)
   const [gameOver, setGameOver] = useState(false)
 
-  // Inicialización del juego online
-  useEffect(() => {
-    if (gameId) {
-      // Configurar nombre del jugador
-      const username = localStorage.getItem("username") || "Jugador 1"
-      setMyName(username)
-      setPlayer1_name(username)
-      setPlayer2_name("Esperando oponente...")
+  // Estado para tracking de jugadas
+  const [lastPlayId, setLastPlayId] = useState(0)
 
-      // Conectar al socket si no está conectado
-      if (!socketService.isConnected) {
-        try {
-          socketService.connect()
-        } catch (error) {
-          console.error("Error al conectar socket:", error)
-          showNotification({
-            type: NOTIFICATION_TYPES.ERROR,
-            message: "Error al conectar con el servidor",
-          })
-        }
+  // Cargar datos iniciales del juego
+  const loadGameData = useCallback(async () => {
+    try {
+      console.log("🎮 OnlineTable: Cargando datos del juego:", gameId)
+
+      const response = await gameService.getGame(gameId)
+      const game = response.game
+
+      console.log("📊 Datos del juego:", game)
+
+      const currentUserId = Number.parseInt(localStorage.getItem("userId"))
+      const username = localStorage.getItem("username") || "Jugador"
+
+      const amIHost = game.host_user === currentUserId
+      setIsHost(amIHost)
+
+      console.log("👤 Usuario actual:", currentUserId)
+      console.log("🏠 Soy host:", amIHost)
+
+      if (amIHost) {
+        setPlayer1_name(username)
+        setPlayer2_name(game.guest_username || "Oponente")
+      } else {
+        setPlayer1_name(game.host_username || "Anfitrión")
+        setPlayer2_name(username)
       }
 
-      // Unirse a la sala del juego
-      socketService.joinGame(gameId)
-
-      // Configurar listeners de socket
-      setupSocketListeners()
-
-      // Mostrar notificación de inicio
-      showNotification({
-        type: NOTIFICATION_TYPES.INFO,
-        message: "Conectando a la partida...",
-      })
-    }
-
-    return () => {
-      // Limpiar listeners al desmontar
-      cleanupSocketListeners()
+      // Cargar el estado completo del juego
+      await loadGameState()
+    } catch (error) {
+      console.error("❌ Error al cargar datos del juego:", error)
     }
   }, [gameId])
 
+  // Cargar el estado completo del juego desde el servidor
+  const loadGameState = useCallback(async () => {
+    try {
+      console.log("🔄 Cargando estado completo del juego...")
+      const gameState = await gameService.getGameState(gameId)
+
+      console.log("📊 Estado del juego recibido:", gameState)
+
+      // Actualizar las columnas con los datos del servidor (ya incluye eliminaciones)
+      if (gameState.columns) {
+        console.log("📋 Actualizando columnas con datos del servidor:", gameState.columns)
+
+        // Columnas del jugador 1 (host)
+        setPlayer1_first_column_dices(gameState.columns["1"] || [])
+        setPlayer1_second_column_dices(gameState.columns["2"] || [])
+        setPlayer1_third_column_dices(gameState.columns["3"] || [])
+
+        // Columnas del jugador 2 (guest)
+        setPlayer2_first_column_dices(gameState.columns["4"] || [])
+        setPlayer2_second_column_dices(gameState.columns["5"] || [])
+        setPlayer2_third_column_dices(gameState.columns["6"] || [])
+      }
+
+      // Actualizar el turno
+      const currentUserId = Number.parseInt(localStorage.getItem("userId"))
+      if (gameState.currentTurn) {
+        const isMyTurn = gameState.currentTurn === currentUserId
+        const isHostTurn = gameState.currentTurn === gameState.game.hostUser
+        setTurn(isHostTurn)
+        console.log("🔄 Turno actualizado:", { isMyTurn, isHostTurn, currentTurn: gameState.currentTurn })
+      }
+
+      // Actualizar el contador de jugadas
+      if (gameState.plays) {
+        setLastPlayId(gameState.plays.length)
+      }
+    } catch (error) {
+      console.error("❌ Error al cargar estado del juego:", error)
+    }
+  }, [gameId])
+
+  // Polling para sincronizar jugadas usando el endpoint correcto
+  const syncGamePlays = useCallback(async () => {
+    try {
+      console.log("🔄 Sincronizando jugadas...")
+      const response = await gameService.getGamePlays(gameId)
+      const plays = response.plays || []
+      const columns = response.columns || {}
+
+      if (plays.length > lastPlayId) {
+        console.log("🆕 Nuevas jugadas detectadas, actualizando estado completo...")
+
+        // Actualizar todas las columnas con los datos del servidor (ya procesados)
+        setPlayer1_first_column_dices(columns["1"] || [])
+        setPlayer1_second_column_dices(columns["2"] || [])
+        setPlayer1_third_column_dices(columns["3"] || [])
+        setPlayer2_first_column_dices(columns["4"] || [])
+        setPlayer2_second_column_dices(columns["5"] || [])
+        setPlayer2_third_column_dices(columns["6"] || [])
+
+        setLastPlayId(plays.length)
+
+        // Actualizar el turno basado en la última jugada
+        if (response.gameState && response.gameState.currentTurn) {
+          const isHostTurn = response.gameState.currentTurn === response.gameState.game.hostUser
+          setTurn(isHostTurn)
+          console.log("🔄 Turno actualizado via polling:", {
+            currentTurn: response.gameState.currentTurn,
+            isHostTurn,
+          })
+        }
+
+        // Forzar actualización de puntos
+        setFirst_columns_update((prev) => !prev)
+        setSecond_columns_update((prev) => !prev)
+        setThird_columns_update((prev) => !prev)
+      }
+    } catch (error) {
+      console.error("❌ Error al sincronizar jugadas:", error)
+    }
+  }, [gameId, lastPlayId])
+
+  // Polling cada 2 segundos para sincronizar jugadas
+  useEffect(() => {
+    const interval = setInterval(syncGamePlays, 2000)
+    return () => clearInterval(interval)
+  }, [syncGamePlays])
+
+  // Inicialización del juego online
+  useEffect(() => {
+    if (gameId) {
+      console.log("🚀 OnlineTable: Iniciando para gameId:", gameId)
+      loadGameData()
+      setupSocketConnection()
+    }
+
+    return () => {
+      console.log("🧹 OnlineTable: Limpiando listeners")
+      cleanupSocketListeners()
+    }
+  }, [gameId, loadGameData])
+
+  const setupSocketConnection = () => {
+    try {
+      console.log("🔌 OnlineTable: Configurando conexión de socket...")
+
+      if (!socketService.isConnected) {
+        console.log("🔌 Conectando socket...")
+        socketService.connect()
+      } else {
+        console.log("✅ Socket ya conectado")
+      }
+
+      setupSocketListeners()
+      console.log("🏠 Uniéndose a la sala del juego:", gameId)
+      socketService.joinGame(gameId)
+    } catch (error) {
+      console.error("❌ Error al conectar socket:", error)
+    }
+  }
+
   const setupSocketListeners = () => {
-    // Conexión y desconexión
+    console.log("👂 OnlineTable: Configurando listeners de socket...")
+
     socketService.onConnect((data) => {
-      setConnectionStatus("connected")
-      showNotification({
-        type: NOTIFICATION_TYPES.SUCCESS,
-        message: "Conectado al servidor",
-      })
+      console.log("✅ Socket conectado en OnlineTable:", data)
     })
 
     socketService.onDisconnect((data) => {
-      setConnectionStatus("disconnected")
-      showNotification({
-        type: NOTIFICATION_TYPES.WARNING,
-        message: "Desconectado del servidor",
-      })
+      console.log("❌ Socket desconectado en OnlineTable:", data)
     })
 
-    // Eventos del juego
     socketService.onGameJoined((data) => {
-      setGameStatus(GAME_STATES.WAITING)
-      setIsMyTurn(data.isHost) // El host comienza
-
-      if (data.opponentName) {
-        setOpponentName(data.opponentName)
-        setPlayer2_name(data.opponentName)
-        setGameStatus(GAME_STATES.PLAYING)
-        showNotification({
-          type: NOTIFICATION_TYPES.SUCCESS,
-          message: `¡${data.opponentName} se ha unido a la partida!`,
-        })
-      }
+      console.log("🎮 Evento gameJoined en OnlineTable:", data)
     })
 
     socketService.onGameStarted((data) => {
-      setOpponentName(data.opponentName)
-      setPlayer2_name(data.opponentName)
-      setGameStatus(GAME_STATES.PLAYING)
-      showNotification({
-        type: NOTIFICATION_TYPES.SUCCESS,
-        message: `¡${data.opponentName} se ha unido a la partida!`,
-      })
+      console.log("🚀 Evento gameStarted en OnlineTable:", data)
     })
 
     socketService.onPlayMade((data) => {
-      // Actualizar el tablero con la jugada del oponente
-      handleOpponentPlay(data)
-
-      // Cambiar el turno
-      setIsMyTurn(true)
-      setTurn(true)
-
-      showNotification({
-        type: NOTIFICATION_TYPES.INFO,
-        message: "Es tu turno",
-      })
+      console.log("🎯 Jugada recibida via WebSocket en OnlineTable:", data)
+      // Recargar estado completo desde el servidor (ya incluye eliminaciones)
+      setTimeout(() => {
+        loadGameState()
+      }, 300)
     })
 
     socketService.onGameEnded((data) => {
-      setGameStatus(GAME_STATES.FINISHED)
-      setGameOver(true)
-
-      if (data.winnerId === Number.parseInt(localStorage.getItem("userId"))) {
-        setWinner(myName)
-        showNotification({
-          type: NOTIFICATION_TYPES.SUCCESS,
-          message: "¡Has ganado la partida!",
-        })
+      console.log("🏁 Juego terminado:", data)
+      const currentUserId = Number.parseInt(localStorage.getItem("userId"))
+      if (data.winnerId === currentUserId) {
+        setWinner(isHost ? player1_name : player2_name)
       } else {
-        setWinner(opponentName)
-        showNotification({
-          type: NOTIFICATION_TYPES.INFO,
-          message: "Has perdido la partida",
-        })
+        setWinner(isHost ? player2_name : player1_name)
       }
-    })
-
-    socketService.onOpponentDisconnect(() => {
-      setOpponentConnected(false)
-      showNotification({
-        type: NOTIFICATION_TYPES.WARNING,
-        message: "Tu oponente se ha desconectado",
-      })
-    })
-
-    socketService.onOpponentReconnect(() => {
-      setOpponentConnected(true)
-      showNotification({
-        type: NOTIFICATION_TYPES.SUCCESS,
-        message: "Tu oponente se ha reconectado",
-      })
+      setGameOver(true)
     })
 
     socketService.onError((error) => {
-      showNotification({
-        type: NOTIFICATION_TYPES.ERROR,
-        message: error.message || "Error en la conexión",
-      })
+      console.error("❌ Error de socket en OnlineTable:", error)
+    })
+
+    socketService.onNotification((notification) => {
+      console.log("📢 Notificación recibida:", notification)
     })
   }
 
   const cleanupSocketListeners = () => {
-    // Limpiar todos los listeners
+    console.log("🧹 OnlineTable: Limpiando listeners de socket...")
     socketService.off("onConnect")
     socketService.off("onDisconnect")
     socketService.off("onGameJoined")
     socketService.off("onGameStarted")
     socketService.off("onPlayMade")
     socketService.off("onGameEnded")
-    socketService.off("onOpponentDisconnect")
-    socketService.off("onOpponentReconnect")
     socketService.off("onError")
+    socketService.off("onNotification")
   }
 
-  const handleOpponentPlay = (playData) => {
-    // Actualizar el tablero con la jugada del oponente
-    setPlayer2_hookDice({
-      column_id: playData.column,
-      face: playData.dice,
-    })
-
-    // Actualizar el dado
-    setDice(getDice())
-  }
-
-  const getTotalPoints = useCallback((column1, column2, column3) => {
+  const getTotalPoints = (column1, column2, column3) => {
     let ret = 0
     ret += pointsColumn(column1)
     ret += pointsColumn(column2)
     ret += pointsColumn(column3)
     return ret
-  }, [])
+  }
 
   useEffect(() => {
+    console.log("🔄 Cambio de turno - turn:", turn)
     setCup_position(turn ? CUP_PLAYER1_POSITION : CUP_PLAYER2_POSITION)
     setBoard1_enabled(!turn)
     setBoard2_enabled(turn)
     setDice(getDice())
   }, [turn])
 
-  // Efectos para eliminar dados del oponente
-  useEffect(() => {
-    setPlayer2_first_column_dices((prev) =>
-      removeDices(prev, player1_first_column_dices[player1_first_column_dices.length - 1]),
-    )
-    setFirst_columns_update(!first_columns_update)
-  }, [player1_first_column_dices])
-
-  useEffect(() => {
-    setPlayer2_second_column_dices((prev) =>
-      removeDices(prev, player1_second_column_dices[player1_second_column_dices.length - 1]),
-    )
-    setSecond_columns_update(!second_columns_update)
-  }, [player1_second_column_dices])
-
-  useEffect(() => {
-    setPlayer2_third_column_dices((prev) =>
-      removeDices(prev, player1_third_column_dices[player1_third_column_dices.length - 1]),
-    )
-    setThird_columns_update(!third_columns_update)
-  }, [player1_third_column_dices])
-
-  useEffect(() => {
-    setPlayer1_first_column_dices((prev) =>
-      removeDices(prev, player2_first_column_dices[player2_first_column_dices.length - 1]),
-    )
-    setFirst_columns_update(!first_columns_update)
-  }, [player2_first_column_dices])
-
-  useEffect(() => {
-    setPlayer1_second_column_dices((prev) =>
-      removeDices(prev, player2_second_column_dices[player2_second_column_dices.length - 1]),
-    )
-    setSecond_columns_update(!second_columns_update)
-  }, [player2_second_column_dices])
-
-  useEffect(() => {
-    setPlayer1_third_column_dices((prev) =>
-      removeDices(prev, player2_third_column_dices[player2_third_column_dices.length - 1]),
-    )
-    setThird_columns_update(!third_columns_update)
-  }, [player2_third_column_dices])
-
+  // Actualizar puntos cuando cambien las columnas
   useEffect(() => {
     setPlayer1_points(
       getTotalPoints(player1_first_column_dices, player1_second_column_dices, player1_third_column_dices),
     )
+  }, [
+    player1_first_column_dices,
+    player1_second_column_dices,
+    player1_third_column_dices,
+    first_columns_update,
+    second_columns_update,
+    third_columns_update,
+  ])
+
+  useEffect(() => {
     setPlayer2_points(
       getTotalPoints(player2_first_column_dices, player2_second_column_dices, player2_third_column_dices),
     )
+  }, [
+    player2_first_column_dices,
+    player2_second_column_dices,
+    player2_third_column_dices,
+    first_columns_update,
+    second_columns_update,
+    third_columns_update,
+  ])
 
-    // Verificar si el juego ha terminado
+  // Verificar condiciones de victoria
+  useEffect(() => {
     if (
       player1_first_column_dices.length === 3 &&
       player1_second_column_dices.length === 3 &&
@@ -310,10 +331,10 @@ const OnlineTable = () => {
     ) {
       setWinner(player1_name)
       setGameOver(true)
-      setGameStatus(GAME_STATES.FINISHED)
 
-      // Notificar al servidor
-      socketService.endGame(gameId, Number.parseInt(localStorage.getItem("userId")))
+      if (isHost) {
+        socketService.endGame(gameId, Number.parseInt(localStorage.getItem("userId")))
+      }
     }
 
     if (
@@ -323,7 +344,10 @@ const OnlineTable = () => {
     ) {
       setWinner(player2_name)
       setGameOver(true)
-      setGameStatus(GAME_STATES.FINISHED)
+
+      if (!isHost) {
+        socketService.endGame(gameId, Number.parseInt(localStorage.getItem("userId")))
+      }
     }
   }, [
     player1_first_column_dices,
@@ -332,15 +356,15 @@ const OnlineTable = () => {
     player2_first_column_dices,
     player2_second_column_dices,
     player2_third_column_dices,
-    getTotalPoints,
+    isHost,
     gameId,
     player1_name,
     player2_name,
   ])
 
   const changeTurn = () => {
+    console.log("🔄 changeTurn llamado - turn actual:", turn, "nuevo turn:", !turn)
     setTurn(!turn)
-    setIsMyTurn(false)
   }
 
   const resetGame = () => {
@@ -353,7 +377,6 @@ const OnlineTable = () => {
     setPlayer2_second_column_dices([])
     setPlayer2_third_column_dices([])
     setTurn(true)
-    setIsMyTurn(true)
     setCup_position(CUP_PLAYER1_POSITION)
     setDice(1)
     setFirst_columns_update(false)
@@ -361,106 +384,126 @@ const OnlineTable = () => {
     setThird_columns_update(false)
     setWinner(null)
     setGameOver(false)
-    setGameStatus(GAME_STATES.PLAYING)
+    setLastPlayId(0)
   }
 
-  const handleDragEnd = (event) => {
+  const handleDragEnd = async (event) => {
     const { active, over } = event
 
-    // Solo permitir movimientos si es tu turno y el juego está en curso
-    if (!isMyTurn || gameStatus !== GAME_STATES.PLAYING) {
-      return
-    }
+    console.log("🎯 handleDragEnd llamado")
+    console.log("🎯 Estado actual:", { turn, isHost, canMove: canMakeMove() })
 
     if (!over || over.data.current.size >= 3) {
+      console.log("🚫 Movimiento cancelado - columna llena o destino inválido")
       return
     }
 
     if (active.id === over.id) {
+      console.log("🚫 Movimiento cancelado - mismo origen y destino")
       return
     }
 
-    // Actualizar el tablero local
-    setPlayer1_hookDice({
-      column_id: over.id,
-      face: active.data.current.face,
-    })
+    const columnId = over.id
+    const diceFace = active.data.current.face
 
-    // Enviar el movimiento al servidor
-    socketService.makePlay(gameId, active.data.current.face, over.id)
+    console.log("🎲 Realizando jugada:", { column: columnId, dice: diceFace })
 
-    // Mostrar notificación
-    showNotification({
-      type: NOTIFICATION_TYPES.INFO,
-      message: "Movimiento realizado. Esperando al oponente...",
-    })
+    // NO actualizar el tablero local - dejar que el servidor maneje todo
+    // Esto evita inconsistencias entre frontend y backend
 
+    // Enviar la jugada al servidor
+    console.log("📡 Enviando jugada al servidor...")
+
+    try {
+      // Intentar por WebSocket primero
+      socketService.makePlay(gameId, diceFace, columnId)
+      console.log("✅ Jugada enviada via WebSocket")
+
+      // También enviar por API como backup
+      await gameService.makePlay(gameId, diceFace, columnId)
+      console.log("✅ Jugada enviada via API")
+
+      // Recargar estado inmediatamente después de enviar
+      setTimeout(() => {
+        loadGameState()
+      }, 200)
+    } catch (error) {
+      console.error("❌ Error al enviar jugada:", error)
+    }
+
+    console.log("🔄 Cambiando turno después de hacer jugada")
     changeTurn()
   }
+    //Eliminan los dados del oponente
+    useEffect(() => {
+        setPlayer2_first_column_dices((prev) => removeDices(prev, player1_first_column_dices[player1_first_column_dices.length - 1]));
+        setFirst_columns_update(!first_columns_update);
+    }, [player1_first_column_dices]);
+    useEffect(() => {
+        setPlayer2_second_column_dices((prev) => removeDices(prev, player1_second_column_dices[player1_second_column_dices.length - 1]));
+        setSecond_columns_update(!second_columns_update);
+    }, [player1_second_column_dices]);
 
-  const handleSurrender = () => {
-    if (window.confirm("¿Estás seguro de que quieres rendirte?")) {
-      // Notificar al servidor
-      socketService.surrender(gameId)
+    useEffect(() => {
+        setPlayer2_third_column_dices((prev) => removeDices(prev, player1_third_column_dices[player1_third_column_dices.length - 1]));
+        setThird_columns_update(!third_columns_update);
+    }, [player1_third_column_dices]);
 
-      // Actualizar estado local
-      setWinner(opponentName)
-      setGameOver(true)
-      setGameStatus(GAME_STATES.FINISHED)
+    useEffect(() => {
+        setPlayer1_first_column_dices((prev) => removeDices(prev, player2_first_column_dices[player2_first_column_dices.length - 1]));
+        setFirst_columns_update(!first_columns_update);
+    }, [player2_first_column_dices]);
 
-      showNotification({
-        type: NOTIFICATION_TYPES.INFO,
-        message: "Te has rendido",
-      })
+    useEffect(() => {
+        setPlayer1_second_column_dices((prev) => removeDices(prev, player2_second_column_dices[player2_second_column_dices.length - 1]));
+        setSecond_columns_update(!second_columns_update);
+    }, [player2_second_column_dices]);
+
+    useEffect(() => {
+        setPlayer1_third_column_dices((prev) => removeDices(prev, player2_third_column_dices[player2_third_column_dices.length - 1]));
+        setThird_columns_update(!third_columns_update);
+    }, [player2_third_column_dices]);
+
+  const canMakeMove = () => {
+    if (isHost && turn) {
+      return true
     }
+    if (!isHost && !turn) {
+      return true
+    }
+    return false
   }
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="relative w-full h-screen flex flex-col justify-center items-center">
-        {/* Header con información del juego online */}
-        <div className="absolute top-4 left-4 bg-white rounded-lg shadow-md p-4 z-10">
-          <div className="text-sm space-y-1">
-            <div className="flex items-center space-x-2">
-              <span
-                className={`w-3 h-3 rounded-full ${connectionStatus === "connected" ? "bg-green-500" : "bg-red-500"}`}
-              ></span>
-              <span className="font-medium">{connectionStatus === "connected" ? "Conectado" : "Desconectado"}</span>
-            </div>
-            <div>
-              Partida: <span className="font-mono">{gameId}</span>
-            </div>
-            <div>
-              Estado: <span className="capitalize">{gameStatus}</span>
-            </div>
-            {gameStatus === GAME_STATES.PLAYING &&
-              (isMyTurn ? (
-                <div className="text-green-600 font-medium">🎯 Tu turno</div>
-              ) : (
-                <div className="text-orange-600 font-medium">⏳ Turno del oponente</div>
-              ))}
-            {!opponentConnected && <div className="text-red-600 font-medium">⚠️ Oponente desconectado</div>}
-          </div>
-        </div>
-
-        {/* Botón de rendirse */}
-        <div className="absolute top-4 right-20 z-10">
-          <button
-            onClick={handleSurrender}
-            className="bg-orange-500 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition"
-            disabled={gameStatus !== GAME_STATES.PLAYING}
-          >
-            Rendirse
-          </button>
-        </div>
-
         <CloseButton />
 
-        {/* Board superior (Oponente) */}
+        {/* Debug info en pantalla */}
+        <div className="absolute top-4 left-4 bg-black bg-opacity-75 text-white p-2 rounded text-xs">
+          <p>GameID: {gameId}</p>
+          <p>Is Host: {isHost.toString()}</p>
+          <p>Turn: {turn.toString()}</p>
+          <p>Can Move: {canMakeMove().toString()}</p>
+          <p>Socket: {socketService.isConnected ? "Connected" : "Disconnected"}</p>
+          <p>Last Play ID: {lastPlayId}</p>
+          <p>
+            P1 Dices: [{player1_first_column_dices.length}, {player1_second_column_dices.length},{" "}
+            {player1_third_column_dices.length}]
+          </p>
+          <p>
+            P2 Dices: [{player2_first_column_dices.length}, {player2_second_column_dices.length},{" "}
+            {player2_third_column_dices.length}]
+          </p>
+          <p>P1 Points: {player1_points}</p>
+          <p>P2 Points: {player2_points}</p>
+        </div>
+
+        {/* Board superior (Guest/Jugador 2) */}
         <div className="mb-[1%]">
           <Board
             id={IDS_BOARD2}
-            enabled={board2_enabled || !isMyTurn}
+            enabled={board2_enabled}
             dice={player2_hookDice}
             first_column_dices={player2_first_column_dices}
             setFirst_column_dices={setPlayer2_first_column_dices}
@@ -477,16 +520,24 @@ const OnlineTable = () => {
             third_columns_update={third_columns_update}
           />
         </div>
-        <p className="font-medium">{player2_name}</p>
-        <p className="font-extrabold text-xl">{player2_points}</p>
-        <p className="font-extrabold text-xl">{player1_points}</p>
-        <p className="font-medium">{player1_name}</p>
 
-        {/* Board inferior (Jugador) */}
+        <p>{player2_name}</p>
+        <p className="font-extrabold">{player2_points}</p>
+
+        <div className="text-center my-2">
+          <p className={`font-bold ${canMakeMove() ? "text-green-600" : "text-gray-500"}`}>
+            {canMakeMove() ? "Tu turno" : "Turno del oponente"}
+          </p>
+        </div>
+
+        <p className="font-extrabold">{player1_points}</p>
+        <p>{player1_name}</p>
+
+        {/* Board inferior (Host/Jugador 1) */}
         <div className="mt-[1%]">
           <Board
             id={IDS_BOARD1}
-            enabled={board1_enabled || !isMyTurn}
+            enabled={board1_enabled}
             dice={player1_hookDice}
             first_column_dices={player1_first_column_dices}
             setFirst_column_dices={setPlayer1_first_column_dices}
@@ -504,46 +555,12 @@ const OnlineTable = () => {
           />
         </div>
 
-        {/* Cubilete con indicador de turno */}
         <div className={cup_position}>
-          <div className={`${!isMyTurn || gameStatus !== GAME_STATES.PLAYING ? "opacity-50 pointer-events-none" : ""}`}>
+          <div className={!canMakeMove() ? "opacity-50 pointer-events-none" : ""}>
             <Cup id={CUP_IP} face={dice} />
           </div>
         </div>
 
-        {/* Overlay cuando no es tu turno */}
-        {!isMyTurn && gameStatus === GAME_STATES.PLAYING && (
-          <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center z-20 pointer-events-none">
-            <div className="bg-white rounded-lg p-6 shadow-xl">
-              <div className="text-center">
-                <div className="text-4xl mb-2">⏳</div>
-                <h3 className="text-lg font-semibold">Turno del oponente</h3>
-                <p className="text-gray-600">Espera tu turno...</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Overlay cuando el juego está en espera */}
-        {gameStatus === GAME_STATES.WAITING && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20">
-            <div className="bg-white rounded-lg p-8 shadow-xl max-w-md w-full">
-              <div className="text-center">
-                <div className="animate-pulse text-4xl mb-4">⏳</div>
-                <h3 className="text-xl font-bold mb-2">Esperando oponente</h3>
-                <p className="text-gray-600 mb-4">La partida comenzará cuando se una otro jugador</p>
-                <button
-                  onClick={() => navigate("/")}
-                  className="bg-red-500 text-white py-2 px-6 rounded-lg hover:bg-red-600 transition"
-                >
-                  Cancelar partida
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Dialog de fin de partida */}
         {gameOver && <MessageDialog winner={winner} reset={resetGame} p1={player1_points} p2={player2_points} />}
       </div>
     </DndContext>

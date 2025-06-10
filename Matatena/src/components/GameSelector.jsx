@@ -1,196 +1,163 @@
-import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
-import { gameService } from '../services/gameService';
-import { ROUTES, redirectToRoute } from '../utils/routes';
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { gameService } from "../services/gameService"
+import { NOTIFICATION_TYPES } from "../utils/constants"
+import { showNotification } from "./NotificationContainer"
 
-const inputStyle = "w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400";
-const buttonStyle = "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed";
-const buttonLocalStyle = "w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-700 transition";
-const errorStyle = "text-red-500 text-sm mb-2 text-center";
-const successStyle = "text-green-600 text-sm mb-2 text-center";
+const inputStyle = "w-full px-4 py-2 border rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+const buttonStyle =
+  "w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+const buttonLocalStyle = "w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-700 transition"
+const errorStyle = "text-red-500 text-sm mb-2 text-center"
+const successStyle = "text-green-600 text-sm mb-2 text-center"
 
-const GameSelector = () => {
-  const [gameCode, setGameCode] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [createdGameCode, setCreatedGameCode] = useState('');
-  
-  const { isAuthenticated, user } = useAuth();
+const GameSelector = ({ onClose }) => {
+  const [gameCode, setGameCode] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+
+  const navigate = useNavigate()
 
   // Función para crear una nueva partida online
   const handleCreateGame = async () => {
-    if (!isAuthenticated) {
-      setError('Debes iniciar sesión para crear una partida online');
-      return;
-    }
-
-    setIsLoading(true);
-    setError('');
-    setSuccess('');
+    setIsLoading(true)
+    setError("")
+    setSuccess("")
 
     try {
-      const gameData = await gameService.createGame();
-      setCreatedGameCode(gameData.gameCode);
-      setSuccess(`¡Partida creada! Código: ${gameData.gameCode}`);
-      
-      // Redirigir a la sala de espera
+      // Llamar al backend para crear la partida
+      const gameData = await gameService.createGame()
+
+      setSuccess(`¡Partida creada! Código: ${gameData.gameCode}`)
+
+      showNotification({
+        type: NOTIFICATION_TYPES.SUCCESS,
+        message: `Partida creada con código: ${gameData.gameCode}`,
+      })
+
+      // Redirigir a la sala de espera con el gameId real del backend
       setTimeout(() => {
-        redirectToRoute(ROUTES.WAITING_ROOM(gameData.gameId));
-      }, 2000);
-      
+        navigate(`/waiting-room/${gameData.gameId}`)
+        if (onClose) onClose()
+      }, 1500)
     } catch (error) {
-      setError(error.message || 'Error al crear la partida');
-      console.error('Error al crear partida:', error);
+      setError(error.message || "Error al crear la partida")
+      showNotification({
+        type: NOTIFICATION_TYPES.ERROR,
+        message: error.message || "Error al crear la partida",
+      })
+      console.error("Error al crear partida:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Función para unirse a una partida por código
   const handleJoinGame = async (e) => {
-    e.preventDefault();
-    
-    if (!isAuthenticated) {
-      setError('Debes iniciar sesión para unirte a una partida online');
-      return;
-    }
+    e.preventDefault()
 
     if (!gameCode.trim()) {
-      setError('Por favor, introduce un código de partida');
-      return;
+      setError("Por favor, introduce un código de partida")
+      return
     }
 
-    setIsLoading(true);
-    setError('');
-    setSuccess('');
+    if (gameCode.length !== 5) {
+      setError("El código debe tener exactamente 5 caracteres")
+      return
+    }
+
+    setIsLoading(true)
+    setError("")
+    setSuccess("")
 
     try {
-      const gameData = await gameService.joinGameByCode(gameCode.toUpperCase());
-      setSuccess('¡Te has unido a la partida!');
-      
-      // Redirigir al juego
+      // Llamar al backend para unirse a la partida
+      const gameData = await gameService.joinGameByCode(gameCode.toUpperCase())
+
+      setSuccess("¡Te has unido a la partida!")
+
+      showNotification({
+        type: NOTIFICATION_TYPES.SUCCESS,
+        message: "Te has unido a la partida exitosamente",
+      })
+
+      // Redirigir a la sala de espera con el gameId real del backend
       setTimeout(() => {
-        redirectToRoute(ROUTES.GAME(gameData.game.id));
-      }, 1000);
-      
+        navigate(`/waiting-room/${gameData.game.id}`)
+        if (onClose) onClose()
+      }, 1000)
     } catch (error) {
-      setError(error.message || 'Error al unirse a la partida');
-      console.error('Error al unirse a partida:', error);
+      setError(error.message || "Error al unirse a la partida")
+      showNotification({
+        type: NOTIFICATION_TYPES.ERROR,
+        message: error.message || "Código de partida inválido",
+      })
+      console.error("Error al unirse a partida:", error)
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   // Función para jugar en modo local
   const handlePlayLocal = () => {
-    redirectToRoute(ROUTES.PLAY_LOCAL);
-  };
-
-  // Función para copiar código al portapapeles
-  const copyToClipboard = async (text) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      setSuccess('¡Código copiado al portapapeles!');
-    } catch (error) {
-      console.error('Error al copiar:', error);
-    }
-  };
+    navigate("/play")
+    if (onClose) onClose()
+  }
 
   return (
     <div className="w-full max-w-md mx-auto bg-white rounded-xl shadow-md p-8">
       <h2 className="text-2xl font-bold mb-6 text-center">Seleccionar Modo de Juego</h2>
-      
+
       {error && <div className={errorStyle}>{error}</div>}
       {success && <div className={successStyle}>{success}</div>}
-      
+
       {/* Botones superiores */}
       <div className="space-y-4 mb-6">
-        <button
-          onClick={handleCreateGame}
-          disabled={isLoading || !isAuthenticated}
-          className={buttonStyle}
-        >
-          {isLoading ? 'Creando partida...' : 'Crear Partida Online'}
+        <button onClick={handleCreateGame} disabled={isLoading} className={buttonStyle}>
+          {isLoading ? "Creando partida..." : "Crear Partida Online"}
         </button>
-        
-        <button
-          onClick={handlePlayLocal}
-          disabled={isLoading}
-          className={buttonLocalStyle}
-        >
+
+        <button onClick={handlePlayLocal} disabled={isLoading} className={buttonLocalStyle}>
           Jugar Local
         </button>
       </div>
 
-      {/* Mostrar código de partida creada */}
-      {createdGameCode && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-sm text-gray-600 mb-2">Código de tu partida:</p>
-          <div className="flex items-center space-x-2">
-            <code className="flex-1 bg-white px-3 py-2 rounded border text-lg font-mono text-center">
-              {createdGameCode}
-            </code>
-            <button
-              onClick={() => copyToClipboard(createdGameCode)}
-              className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition text-sm"
-            >
-              Copiar
-            </button>
-          </div>
-          <p className="text-xs text-gray-500 mt-2">
-            Comparte este código con tu oponente para que se una a la partida
-          </p>
-        </div>
-      )}
-
       {/* Sección para unirse a partida */}
       <div className="border-t pt-6">
-        <p className="text-sm text-gray-600 mb-3 text-center">
-          Si quieres unirte a una partida introduce un código:
-        </p>
-        
+        <p className="text-sm text-gray-600 mb-3 text-center">¿Tienes un código de partida? Únete aquí:</p>
+
         <form onSubmit={handleJoinGame} className="space-y-4">
           <input
             type="text"
-            placeholder="Código de partida (ej: ABC12)"
+            placeholder="Código de 5 dígitos (ej: ABC12)"
             value={gameCode}
             onChange={(e) => setGameCode(e.target.value.toUpperCase())}
             className={inputStyle}
             maxLength={5}
-            disabled={isLoading || !isAuthenticated}
-            style={{ textTransform: 'uppercase' }}
+            disabled={isLoading}
+            style={{ textTransform: "uppercase" }}
           />
-          
+
           <button
             type="submit"
-            disabled={isLoading || !isAuthenticated || !gameCode.trim()}
+            disabled={isLoading || !gameCode.trim() || gameCode.length !== 5}
             className={buttonStyle}
           >
-            {isLoading ? 'Uniéndose...' : 'Unirse a Partida'}
+            {isLoading ? "Uniéndose..." : "Unirse a Partida"}
           </button>
         </form>
       </div>
 
-      {/* Mensaje para usuarios no autenticados */}
-      {!isAuthenticated && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800 text-center">
-            <strong>Nota:</strong> Debes iniciar sesión para jugar online
-          </p>
-        </div>
-      )}
-
-      {/* Información del usuario autenticado */}
-      {isAuthenticated && user && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <p className="text-sm text-green-800 text-center">
-            Conectado como: <strong>{user.username}</strong>
-          </p>
-        </div>
-      )}
+      {/* Información adicional */}
+      <div className="mt-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+        <p className="text-xs text-blue-800 text-center">
+          <strong>Nota:</strong> Para jugar online, uno de los jugadores debe crear la partida y compartir el código con
+          el otro jugador.
+        </p>
+      </div>
     </div>
-  );
-};
+  )
+}
 
-export default GameSelector;
+export default GameSelector
